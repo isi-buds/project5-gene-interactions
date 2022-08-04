@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 
 sparse = edah5.csr_matrix
 
-plt.spy(csr_matrix.toarray())
-plt.show()
 
-#plt.hist
+plt.spy(sparse.toarray())
+#plt.show()
+plt.savefig('analysis/eda/h5-plots/2d-plot.png')
 
