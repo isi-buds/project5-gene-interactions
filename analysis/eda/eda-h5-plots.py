@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 sparse = edah5.csr_matrix
 
+fig, ax = plt.subplots()
 
 plt.spy(sparse.toarray())
 plt.xlabel('Cells')
