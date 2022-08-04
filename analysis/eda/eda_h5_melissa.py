@@ -1,5 +1,4 @@
 import h5py
-import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.sparse import csr_matrix
 import numpy as np
@@ -24,7 +23,3 @@ csr_matrix = csr_matrix((data, indices, indptr))
 
 #print(csr_matrix.toarray())
 
-plt.spy(csr_matrix.toarray())
-plt.show()
-
-plt.hist
