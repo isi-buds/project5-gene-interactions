@@ -5,8 +5,12 @@ import matplotlib.pyplot as plt
 
 sparse = edah5.csr_matrix
 
-plt.spy(csr_matrix.toarray())
-plt.show()
+fig, ax = plt.subplots()
 
-#plt.hist
+plt.spy(sparse.toarray())
+plt.xlabel('Cells')
+plt.ylabel('Genes')
+
+plt.show()
+plt.savefig('analysis/eda/h5-plots/2d-plot.png')
 
