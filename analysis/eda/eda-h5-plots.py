@@ -7,6 +7,9 @@ sparse = edah5.csr_matrix
 
 
 plt.spy(sparse.toarray())
-#plt.show()
+plt.xlabel('Cells')
+plt.ylabel('Genes')
+
+plt.show()
 plt.savefig('analysis/eda/h5-plots/2d-plot.png')
 
