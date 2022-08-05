@@ -12,7 +12,7 @@ def kfold_log_loss(model, X=None, y=None, n_splits=5):
     from sklearn.model_selection import KFold
     from sklearn.metrics import log_loss
     X = np.array(X)
-    y = np.array(y).reshape(-1, 1)
+    y = np.array(y).reshape(-1)
     kf = KFold(n_splits=n_splits, shuffle=True)
     kf.get_n_splits(X)
     log_l = []

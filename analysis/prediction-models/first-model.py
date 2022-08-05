@@ -53,6 +53,7 @@ model_baseline = LogisticRegression(solver = 'sag', max_iter = 200,
 #print('Loss for model 1: ', cross_entropy)
 #print('Loss for baseline: ', baseline_cross_entropy)
 
+# cross entropies
 five_fold_log_loss = kfold_log_loss(model1, X, y)
 baseline_log_loss = kfold_log_loss(model_baseline, X2, y)
 print('Five fold log loss for model 1: ', five_fold_log_loss)
