@@ -1,8 +1,9 @@
 # L2 penalty
 import pandas as pd
-from sklearn.linear_model import Ridge
+import numpy as np
+from sklearn.linear_model import Ridge, RidgeCV, LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, log_loss
+from sklearn.metrics import accuracy_score, log_loss, mean_squared_error
 from evaluation import kfold_log_loss
 
 data = pd.read_table('data/SyntheticData_FirstSet.txt', delimiter = '   ', 
@@ -16,11 +17,18 @@ y = motifs
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 
-ridge_reg = Ridge(alpha = 1)
+alphas = 10**np.linspace(10, -2, 100) * 0.5
 
+ridgecv_reg = RidgeCV(alphas = alphas, scoring = 'neg_mean_squared_error', normalize = True)
+ridgecv_reg.fit(X_train, y_train)
+
+#print(ridgecv_reg.alpha_)
+
+ridge_reg = Ridge(alpha = ridgecv_reg.alpha_, normalize = True)
 ridge_reg.fit(X_train, y_train)
 
-preds = ridge_reg.predict(X_test)
+# get squared error loss
+mse = mean_squared_error(y_test, ridge_reg.predict(X_test))
 
-print('predictions: \n', preds)
+print('MSE: ', mse)
 
