@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, log_loss
+from evaluation import kfold_log_loss
 
 data = pd.read_table('data/SyntheticData_FirstSet.txt', delimiter = '   ', 
                       header = None, engine = 'python')
@@ -36,11 +37,23 @@ test_accuracy = accuracy_score(y_test, model1.predict(X_test))
 print('Train accuracy: ', train_accuracy)
 print('Test accuracy: ', test_accuracy)
 
-baseline = np.full((1650, 81), 1/81)
+# create baseline model
+X2 = np.full((5000, 1), 1)
+X2_train, X2_test, y2_train, y2_test = train_test_split(X2, y, test_size=0.33, random_state=42)
+model_baseline = LogisticRegression(solver = 'sag', max_iter = 200,
+                            multi_class = 'multinomial')
 
-cross_entropy = log_loss(y_test, model1_probs)
+        
+#baseline = np.full((1650, 81), 1/81)
 
-baseline_cross_entropy = log_loss(y_test, baseline)
+#cross_entropy = log_loss(y_test, model1_probs)
 
-print('Loss for model 1: ', cross_entropy)
-print('Loss for baseline: ', baseline_cross_entropy)
+#baseline_cross_entropy = log_loss(y_test, baseline)
+
+#print('Loss for model 1: ', cross_entropy)
+#print('Loss for baseline: ', baseline_cross_entropy)
+
+five_fold_log_loss = kfold_log_loss(model1, X, y)
+baseline_log_loss = kfold_log_loss(model_baseline, X2, y)
+print('Five fold log loss for model 1: ', five_fold_log_loss)
+print('Log loss for baseline model: ', baseline_log_loss)
