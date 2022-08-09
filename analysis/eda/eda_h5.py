@@ -1,7 +1,5 @@
 import h5py
-import pandas as pd
 from scipy.sparse import csr_matrix
-import numpy as np
 
 filename = 'data/hepatocyte_data.h5'
 
