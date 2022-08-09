@@ -5,8 +5,16 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from PIL import Image
 import os
+import copy
+import matplotlib
+from matplotlib.colors import LogNorm
 
-data_path = ['..', '..', 'data']
+data_path = ['data']
+
+my_cmap = copy.copy(matplotlib.cm.get_cmap('viridis'))
+my_cmap.set_bad(my_cmap.colors[0])
+sns.set(font_scale=1.5)
+plt.rc('font', size=12)
 
 # # Synth Data First Set
 # %%
@@ -14,17 +22,30 @@ data_path = ['..', '..', 'data']
 data_1 = pd.read_table(os.path.join(*data_path, 'SyntheticData_FirstSet.txt'),
                        delimiter='   ',
                        header=None,
+                       dtype=float,
                        engine='python')
 
 motif_labels = pd.read_table(os.path.join(*data_path, 'membership.txt'),
                              delimiter='   ',
-                             header=None,
+                             names=['motif'],
                              dtype=int,
                              engine='python')
 
-data_1.insert(0, 'motif', motif_labels[0])
+
+network_motifs = pd.read_table(os.path.join(*data_path, 'NetworkMotifs.txt'),
+                             delimiter='  ',
+                             names=['i0', 'i1', 'i2', 'i3'],
+                             dtype=int,
+                             engine='python')
+
+network_motifs = pd.DataFrame(network_motifs.apply(lambda x: '{} {} {} {}'.format(*x), axis=1),
+    columns=['network motif'])
+
+motif_labels = pd.merge(motif_labels - 1, network_motifs, left_on='motif', right_index=True)
+data_1 = pd.merge(motif_labels, data_1, left_index=True, right_index=True)
+
 # %% Delete all files in the first-set-heatmaps folder
-fs_hm_path = 'first-set-heatmaps'
+fs_hm_path = os.path.join('analysis','eda', 'first-set-heatmaps')
 for f in os.listdir(fs_hm_path):
     path_1 = os.path.join(fs_hm_path, f)
     if os.path.isdir(path_1):
@@ -34,23 +55,32 @@ for f in os.listdir(fs_hm_path):
         os.remove(path_1)
 
 # %% A sample of heatmaps
-
+fig, ax = plt.subplots(figsize=(7, 7))
 i_2nd = {}
 for i in data_1['motif'].unique():
     i_2nd[i] = 0
 
 for index in data_1.groupby('motif').sample(n=10, random_state=1).index:
-    temp_matrix = data_1.loc[index, 0:].to_numpy().reshape(51,51)
+    temp_matrix = data_1.loc[index, 0:].astype(float).to_numpy().reshape(51,51)
+
     hm = sns.heatmap(
         temp_matrix,
+        cbar_kws={'label': 'probability'},
+        xticklabels=10,
+        yticklabels=10,
+        square=True,
+        norm=LogNorm(),
+        cmap=my_cmap
     )
     hm.invert_yaxis()
     motif = data_1.at[index, 'motif']
-    title = 'motif-{motif:02}-#{i_2nd:02}-index-{index}'.format(motif=motif,
+    file_name = 'motif-{motif:02}-#{i_2nd:02}-index-{index}'.format(motif=motif,
                                                                  i_2nd=i_2nd[motif],
                                                                  index=index)
-    plt.title(title)
-    plt.savefig(os.path.join(fs_hm_path, 'sample', title))
+    plt.xlabel('gene 1')
+    plt.ylabel('gene 2')
+    plt.title('network motif: %s \n#%s' % (data_1.at[index, 'network motif'], i_2nd[motif]))
+    plt.savefig(os.path.join(fs_hm_path, 'sample', file_name))
     plt.clf()
     i_2nd[motif] += 1
 
@@ -62,26 +92,39 @@ for f in os.listdir(os.path.join(fs_hm_path, 'sample')):
 images[0].save(os.path.join(fs_hm_path, 'first-set-heatmaps-samples.pdf'), save_all=True, append_images=images[1:])
 
 # %%
+fig, ax = plt.subplots(figsize=(7, 7))
 func_list = [np.mean, np.median, np.std]
 for motif in data_1['motif'].unique():
     for func in func_list:
-        hm = sns.heatmap(
-            data_1.loc[data_1['motif'] == motif, 0:].apply(func, axis=0).to_numpy().reshape(51, 51)
-        )
-        hm.invert_yaxis()
-        title = '{motif:02}-{func}'.format(motif=motif,
-                                               func=func.__name__)
-        plt.title(title)
-        plt.savefig(os.path.join(fs_hm_path, 'summaries', title))
-        plt.clf()
+        if sum(data_1.loc[data_1['motif'] == motif, 0:].apply(func, axis=0)) > 0:
+            hm = sns.heatmap(
+                data_1.loc[data_1['motif'] == motif, 0:].apply(func, axis=0).to_numpy().reshape(51, 51),
+                cbar_kws={'label': 'probability'},
+                xticklabels=10,
+                yticklabels=10,
+                square=True,
+                norm=LogNorm(),
+                cmap=my_cmap
+            )
+            hm.invert_yaxis()
+            file_name = '{motif:02}-{func}'.format(motif=motif,
+                                                func=func.__name__)
+            plt.xlabel('gene 1')
+            plt.ylabel('gene 2')
+            title = '%s of motif %s' % (func.__name__, network_motifs.at[motif, 'network motif'])
+            plt.title(title)
+            plt.savefig(os.path.join(fs_hm_path, 'summaries', file_name))
+            plt.clf()
+        else:
+            continue
 
 
 # %%
-array_data = data_1.loc[:, 0:].to_numpy().reshape((5000, 51, 51))
+data_array = data_1.loc[:, 0:].to_numpy().reshape((5000, 51, 51))
 # %%
 for start_row in range(0,46, 5):
     for start_col in range(0,46, 5):
-        temp = array_data[:, start_row:(start_row + 6), start_col:(start_col + 6)].reshape(-1)
+        temp = data_array[:, start_row:(start_row + 6), start_col:(start_col + 6)].reshape(-1)
         plt.hist(temp[temp>0])
         plt.show()
 # %% For 3d plot
@@ -90,7 +133,7 @@ for start_row in range(0,46, 5):
 # xyz = []
 # for x_i in x:
 #     for y_i in y:
-#         xyz.append([x_i, y_i, array_data[3309, y_i, x_i]])
+#         xyz.append([x_i, y_i, data_array[3309, y_i, x_i]])
 
 # import plotly.express as px
 # fig = px.scatter_3d(pd.DataFrame(xyz), x=0, y=1, z=2, color=2)
