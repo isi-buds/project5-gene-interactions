@@ -108,7 +108,7 @@ for index1, gene1 in top_26.iterrows():
 
     for index2, gene2 in top_26.iterrows():
         
-        if gene1.iloc[0] != gene2.iloc[0] and (gene1.iloc[0], gene2.iloc[0]) not in seen:
+        if gene1.iloc[0] != gene2.iloc[0] and {gene1.iloc[0], gene2.iloc[0]} not in seen:
 
             truncated = truncate_values(gene1, gene2, 100)
             hm_matrix = get_hm_matrix(truncated, 101)
@@ -135,7 +135,8 @@ for index1, gene1 in top_26.iterrows():
             plt.savefig(os.path.join(h5_plots_path, title))
             plt.clf()
 
-            seen.append((gene1.iloc[0], gene2.iloc[0]))
+            seen.append({gene1.iloc[0], gene2.iloc[0]})
+
 
 
 
