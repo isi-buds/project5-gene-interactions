@@ -114,7 +114,7 @@ for index1, gene1 in top_26.iterrows():
             hm_matrix = get_hm_matrix(truncated, 101)
 
             hm = sns.heatmap(hm_matrix,
-                             cbar_kws={'label': 'occurances'},
+                             cbar_kws={'label': 'number of cells'},
                              xticklabels=10,
                              yticklabels=10,
                              square=True,
@@ -126,8 +126,8 @@ for index1, gene1 in top_26.iterrows():
             title = 'Gene1-{gene1}-vs-Gene2-{gene2}-hm.png'.format(
                     gene1 = shortened_genes[index1], gene2 = shortened_genes[index2])
 
-            plt.xlabel('gene 1 counts')
-            plt.ylabel('gene 2 counts')
+            plt.xlabel('{gene1} counts'.format(gene1 = shortened_genes[index1]))
+            plt.ylabel('{gene2} counts'.format(gene2 = shortened_genes[index2]))
             plt.title('{gene1} vs {gene2} Interaction Plot'.format(
                        gene1 = shortened_genes[index1], gene2 = shortened_genes[index2]
             ))
