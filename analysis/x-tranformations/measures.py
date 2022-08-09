@@ -98,5 +98,5 @@ for i in range(data_array.shape[0]):
     data_measures.loc[i, ['entropy', 'mutual_info']] = entropy_mut_info(data_array[i])
     data_measures.loc[i, ['x_fano', 'y_fano']] = fano(data_array[i])
 
-data_measures.to_csv(os.path.join(*data_path, 'firstset_tranformed_to_measures.csv'))
+data_measures.to_csv(os.path.join(*data_path, 'firstset_measures.csv'))
 # %%
