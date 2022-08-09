@@ -6,6 +6,17 @@ import seaborn as sns
 import pandas as pd
 import os
 
+h5_plots_path = 'analysis/eda/h5-plots'
+
+# delete old plots
+for f in os.listdir(h5_plots_path):
+    path_1 = os.path.join(h5_plots_path, f)
+    if os.path.isdir(path_1):
+        for f_f in os.listdir(path_1):
+            os.remove(os.path.join(path_1, f_f))
+    else:
+        os.remove(path_1)
+
 sparse = eda_h5.csr_matrix
 
 fig, ax = plt.subplots()
@@ -25,28 +36,19 @@ plt.clf()
 #--------------------------------------------------
 top_26 = eda_h5.top_26_df
 genes = eda_h5.rows
-h5_plots_path = 'analysis/eda/h5-plots'
-
-# delete old plots
-for f in os.listdir(h5_plots_path):
-    path_1 = os.path.join(h5_plots_path, f)
-    if os.path.isdir(path_1):
-        for f_f in os.listdir(path_1):
-            os.remove(os.path.join(path_1, f_f))
-    else:
-        os.remove(path_1)
 
 seen = []
 
+g1_index = 0
 # create pairwise gene plots
-for gene1 in top_26:
-    g1_index = 0
+for gene1 in top_26[0:25]:
 
-    for gene2 in top_26:
-        g2_index = 0
+    g2_index = 0
+
+    for gene2 in top_26[0:25]:
         
         if gene1 != gene2 and (gene1, gene2) not in seen:
-            
+
             temp = top_26.iloc[[gene1, gene2], :].to_numpy().reshape(144, 158)
             hm = sns.heatmap(temp)
             title = 'Gene1-{gene1}-vs-Gene2-{gene2}-hm.png'.format(
@@ -56,7 +58,6 @@ for gene1 in top_26:
             plt.clf()
 
             seen.append((gene1, gene2))
-
 
         g2_index += 1
     
