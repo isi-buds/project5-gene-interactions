@@ -73,7 +73,7 @@ def truncate_values(gene1: pd.Series, gene2: pd.Series, max_val: int) -> pd.Data
     return truncated
 
 # df_2_genes must be a dataframe with 2 rows
-def get_hm_matrix(df_2_genes: pd.DataFrame) -> np.array([[int]]):
+def get_hm_matrix(df_2_genes: pd.DataFrame, size: int) -> np.array([[int]]):
 
     unique_pairs = {} # pair : count
 
@@ -85,10 +85,16 @@ def get_hm_matrix(df_2_genes: pd.DataFrame) -> np.array([[int]]):
         else:
             unique_pairs[pair] += 1
 
+    '''
     temp_x, temp_y = map(max, zip(*unique_pairs))
 
     res = [[unique_pairs.get((j, i), 0) for i in range(temp_y + 1)] 
                                   for j in range(temp_x + 1)]
+    '''
+    
+    x, y = zip(*unique_pairs.keys())
+    res = np.zeros((size, size), np.int32)
+    np.add.at(res, tuple((x, y)), tuple(unique_pairs.values()))
 
     return res
 
@@ -105,10 +111,10 @@ for index1, gene1 in top_26.iterrows():
         if gene1.iloc[0] != gene2.iloc[0] and (gene1.iloc[0], gene2.iloc[0]) not in seen:
 
             truncated = truncate_values(gene1, gene2, 100)
-            hm_matrix = get_hm_matrix(truncated)
+            hm_matrix = get_hm_matrix(truncated, 101)
 
             hm = sns.heatmap(hm_matrix,
-                             cbar_kws={'label': 'probability'},
+                             cbar_kws={'label': 'occurances'},
                              xticklabels=10,
                              yticklabels=10,
                              square=True,
