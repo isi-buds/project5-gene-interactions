@@ -61,7 +61,7 @@ for i in data_1['motif'].unique():
     i_2nd[i] = 0
 
 for index in data_1.groupby('motif').sample(n=10, random_state=1).index:
-    temp_matrix = data_1.loc[index, 0:].astype(float).to_numpy().reshape(51,51)
+    temp_matrix = data_1.loc[index, 0:].astype(float).to_numpy().reshape(51,51, order='F')
 
     hm = sns.heatmap(
         temp_matrix,
@@ -98,7 +98,7 @@ for motif in data_1['motif'].unique():
     for func in func_list:
         if sum(data_1.loc[data_1['motif'] == motif, 0:].apply(func, axis=0)) > 0:
             hm = sns.heatmap(
-                data_1.loc[data_1['motif'] == motif, 0:].apply(func, axis=0).to_numpy().reshape(51, 51),
+                data_1.loc[data_1['motif'] == motif, 0:].apply(func, axis=0).to_numpy().reshape(51, 51, order='F'),
                 cbar_kws={'label': 'probability'},
                 xticklabels=10,
                 yticklabels=10,
@@ -120,13 +120,39 @@ for motif in data_1['motif'].unique():
 
 
 # %%
-data_array = data_1.loc[:, 0:].to_numpy().reshape((5000, 51, 51))
+data_array = data_1.loc[:, 0:].to_numpy().reshape((5000, 51, 51), order='C') 
+# not the same as making a matrix from each row of data_1
+'''
+hm = sns.heatmap(
+    data_array[2],
+    cbar_kws={'label': 'probability'},
+    xticklabels=10,
+    yticklabels=10,
+    square=True,
+    norm=LogNorm(),
+    cmap=my_cmap
+)
+hm.invert_yaxis()
+plt.show()
+hm = sns.heatmap(
+    data_1.loc[2, 0:].astype(float).to_numpy().reshape(51, 51, order='F'),
+    cbar_kws={'label': 'probability'},
+    xticklabels=10,
+    yticklabels=10,
+    square=True,
+    norm=LogNorm(),
+    cmap=my_cmap
+)
+hm.invert_yaxis()
+plt.show()
+'''
 # %%
-for start_row in range(0,46, 5):
-    for start_col in range(0,46, 5):
-        temp = data_array[:, start_row:(start_row + 6), start_col:(start_col + 6)].reshape(-1)
-        plt.hist(temp[temp>0])
-        plt.show()
+
+# for start_row in range(0,46, 5):
+#     for start_col in range(0,46, 5):
+#         temp = data_array[:, start_row:(start_row + 6), start_col:(start_col + 6)].reshape(-1)
+#         plt.hist(temp[temp>0])
+#         plt.show()
 # %% For 3d plot
 # x = [i for i in range(51)]
 # y = [i for i in range(51)]

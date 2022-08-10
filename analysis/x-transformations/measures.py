@@ -9,8 +9,6 @@ data_1 = pd.read_table(os.path.join(*data_path, 'SyntheticData_FirstSet.txt'),
                        delimiter='   ',
                        header=None,
                        engine='python')
-
-data_array = data_1.loc[:, 0:].to_numpy().reshape((-1, 51, 51))
 # %%
 
 
@@ -90,13 +88,15 @@ def fano(matrix):
 
 # %%
 data_measures = pd.DataFrame(columns=['x_mean', 'y_mean', 'x_sd', 'y_sd', 'corr', 'coexpress_index', 'entropy', 'mutual_info', 'x_fano', 'y_fano'])
-for i in range(data_array.shape[0]):
-    data_measures.loc[i, ['x_mean', 'y_mean']] = get_mean(data_array[i])
-    data_measures.loc[i, ['x_sd', 'y_sd']] = get_sd(data_array[i])
-    data_measures.loc[i, 'corr'] = get_corr(data_array[i])
-    data_measures.loc[i, 'coexpress_index'] = coexpression_index(data_array[i])
-    data_measures.loc[i, ['entropy', 'mutual_info']] = entropy_mut_info(data_array[i])
-    data_measures.loc[i, ['x_fano', 'y_fano']] = fano(data_array[i])
+for i in range(data_1.shape[0]):
+    A = data_1.loc[i].to_numpy().reshape(51,51, order='F')
+    data_measures.loc[i, ['x_mean', 'y_mean']] = get_mean(A)
+    data_measures.loc[i, ['x_sd', 'y_sd']] = get_sd(A)
+    data_measures.loc[i, 'corr'] = get_corr(A)
+    data_measures.loc[i, 'coexpress_index'] = coexpression_index(A)
+    data_measures.loc[i, ['entropy', 'mutual_info']] = entropy_mut_info(A)
+    data_measures.loc[i, ['x_fano', 'y_fano']] = fano(A)
 
-data_measures.to_csv(os.path.join(*data_path, 'firstset_measures.csv'))
+data_measures.to_csv(os.path.join(*data_path, 'firstset_measures.csv'), index=False)
+print('firstset_measures.csv created')
 # %%
