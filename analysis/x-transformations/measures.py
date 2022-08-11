@@ -72,9 +72,9 @@ def entropy_mut_info(probdist):
     entropy=-np.sum(np.multiply(probdist_scaled,probdist_log))
     x=np.sum(probdist_scaled,axis=0)
     y=np.sum(probdist_scaled,axis=1)
-    px=-np.dot(x,np.log(x))
-    py=-np.dot(y,np.log(y))
-    mut_info=px+py-entropy
+    Hx=-np.dot(x,np.log(x))
+    Hy=-np.dot(y,np.log(y))
+    mut_info=Hx+Hy-entropy
     return entropy, mut_info
 
 

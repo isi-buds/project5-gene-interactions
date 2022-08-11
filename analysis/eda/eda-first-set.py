@@ -8,6 +8,7 @@ import os
 import copy
 import matplotlib
 from matplotlib.colors import LogNorm
+from scipy.stats import skew
 
 data_path = ['data']
 
@@ -41,8 +42,10 @@ network_motifs = pd.read_table(os.path.join(*data_path, 'NetworkMotifs.txt'),
 network_motifs = pd.DataFrame(network_motifs.apply(lambda x: '{} {} {} {}'.format(*x), axis=1),
     columns=['network motif'])
 
-motif_labels = pd.merge(motif_labels - 1, network_motifs, left_on='motif', right_index=True)
-data_1 = pd.merge(motif_labels, data_1, left_index=True, right_index=True)
+network_motifs.index += 1
+
+motif_labels = pd.merge(motif_labels.loc[:, 'motif'], network_motifs, how='left', left_on='motif', right_index=True)
+data_1 = pd.merge(motif_labels, data_1, how='right', left_index=True, right_index=True)
 
 # %% Delete all files in the first-set-heatmaps folder
 fs_hm_path = os.path.join('analysis','eda', 'first-set-heatmaps')
@@ -93,7 +96,7 @@ images[0].save(os.path.join(fs_hm_path, 'first-set-heatmaps-samples.pdf'), save_
 
 # %%
 fig, ax = plt.subplots(figsize=(7, 7))
-func_list = [np.mean, np.median, np.std]
+func_list = [np.mean, np.median, np.std, max, skew]
 for motif in data_1['motif'].unique():
     for func in func_list:
         if sum(data_1.loc[data_1['motif'] == motif, 0:].apply(func, axis=0)) > 0:
@@ -120,7 +123,7 @@ for motif in data_1['motif'].unique():
 
 
 # %%
-data_array = data_1.loc[:, 0:].to_numpy().reshape((5000, 51, 51), order='C') 
+data_array_bad  = data_1.loc[:, 0:].to_numpy().reshape((5000, 51, 51), order='C') 
 # not the same as making a matrix from each row of data_1
 '''
 hm = sns.heatmap(
@@ -147,19 +150,33 @@ hm.invert_yaxis()
 plt.show()
 '''
 # %%
+data_array = np.zeros((5000, 51, 51))
+for i in range(data_1.shape[0]):
+    data_array[i] = data_1.loc[i, 0:].astype(float).to_numpy().reshape(51,51, order='F')
 
-# for start_row in range(0,46, 5):
-#     for start_col in range(0,46, 5):
-#         temp = data_array[:, start_row:(start_row + 6), start_col:(start_col + 6)].reshape(-1)
-#         plt.hist(temp[temp>0])
-#         plt.show()
-# %% For 3d plot
+# %%
+
+for start_row in range(0,46, 5):
+    for start_col in range(0,46, 5):
+        temp = data_array[:, start_row:(start_row + 6), start_col:(start_col + 6)].reshape(-1)
+        plt.hist(temp, bins=50)
+        plt.show()
+
+# %%
+fig, ax = plt.subplots(figsize=(10, 7))
+sns.histplot(data_array.reshape(-1), bins=50)
+ax.set_yscale('log')
+plt.xlabel('probabilty')
+plt.show()
+
+# %%
+# # %% For 3d plot
 # x = [i for i in range(51)]
 # y = [i for i in range(51)]
 # xyz = []
 # for x_i in x:
 #     for y_i in y:
-#         xyz.append([x_i, y_i, data_array[3309, y_i, x_i]])
+#         xyz.append([x_i, y_i, data_array[1044, y_i, x_i]])
 
 # import plotly.express as px
 # fig = px.scatter_3d(pd.DataFrame(xyz), x=0, y=1, z=2, color=2)
