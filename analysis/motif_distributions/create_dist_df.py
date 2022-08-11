@@ -63,7 +63,7 @@ def create_dist_df(filenames, row_indices) -> None:
                 probdist = df['probdist']
                 row = df['row']
 
-                if probdist.shape != (0, 0):
+                if probdist.shape != (0,):
                     prob_matrix = csr_matrix((probdist, (row, col))).toarray()
                     new_row = pd.Series(prob_matrix.tolist())
 
