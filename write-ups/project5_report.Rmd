@@ -29,7 +29,48 @@ In another relevant article, Cao, J., Spielmann, M., Qiu, X. et al. have used sc
 Describe what data set(s) you used in the project – include references (e.g., URLs) for where you obtained the data if you can.  This section should have considerable detail – make sure you include a good description of your data set(s), including size, dimensionality, types of variables, etc. 
 Use figures (histograms, scatter plots, etc) and tables, but do not overwhelm the reader with too many plots and show only plots that provide interesting insights. In your writing, try to give the reader some intuition and sense of what your data is like.
 
+```{python}
+import h5py
+import pandas as pd
+import numpy as np
+from scipy.sparse import csr_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
+
+
 ### Experimental Data
+
+```{python}
+
+filename = '../data/hepatocyte_data.h5'
+
+hdf = h5py.File(filename, mode = 'r')
+# hdf.keys(): 'Hepatocyte trajectory'
+
+d1 = hdf['Hepatocyte trajectory']
+
+# d1.keys(): ['assay_data', 'col_labels', 'row_labels']
+
+assay_data = d1['assay_data']
+# assay_data.keys(): ['data', 'indices', 'indptr']
+
+data = assay_data['data']
+indices = assay_data['indices']
+indptr = assay_data['indptr']
+
+csr_matrix = csr_matrix((data, indices, indptr))
+```
+
+
+
+```{python}
+fig, ax = plt.subplots(figsize=(10, 7))
+sns.histplot(csr_matrix.toarray().reshape(-1), bins=50)
+ax.set_yscale('log')
+plt.xlabel('probabilty')
+```
+
 
 
 ### Simulated Data
