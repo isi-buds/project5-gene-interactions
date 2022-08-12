@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
@@ -71,7 +71,7 @@ sparse_size = sparse.shape
 
 The rows of the sparse matrix are cells, and the columns are genes. The dataset is (11376, 26183), so there are 11376 cells and 26183 genes. The dataset from the h5 file has been transformed into a sparse matrix, but a sample of it is not shown here because it is mostly zeroes. Instead, the histogram below shows the distribution of values in the sparse matrix. The 2d plot was created from the entire sparse matrix and reinforces the idea that some genes are more commonly expressed than others. This is shown by the vertical striations seen in the graph for genes that are expressed in many cells. Other genes are seen as whitespace because they are hardly expressed at all.
 
-
+```{python}
 #fig, ax = plt.subplots(figsize=(10, 7))
 #sns.histplot(csr_matrix.toarray().reshape(-1), bins=50)
 #ax.set_yscale('log')
@@ -79,8 +79,8 @@ The rows of the sparse matrix are cells, and the columns are genes. The dataset 
 #plt.show()
 ```
 
-![]('../analysis/eda/h5-plots/gene_count.png')
-![]('../analysis/eda/h5-plots/('../analysis/eda/h5-plots/2d-plot.png')
+![]{'../analysis/eda/h5-plots/gene_count.png'}
+![]{'../analysis/eda/h5-plots/('../analysis/eda/h5-plots/2d-plot.png'}
 
 ```{python}
 row_labels = d1['row_labels']
@@ -119,8 +119,8 @@ The top_26_df is a Dataframe of the 26 most expressed genes in the sparse matrix
 
 From the afp vs meg3 plot, we can infer that cells that express a large amount of Afp also tend to express a large amount of Meg3. Therefore, we are expecting a motif identifier that expresses a fairly equal relationship between the two genes. The meg3 vs gpc3 plot shows that cells that express a large amount of Gpc3 tend to express a lower amount of Meg3, so we expect a motif identifer that favors one of the genes over the other. 
 
-![]('../analysis/eda/h5-plots/Gene1-Afp-vs-Gene2-Meg3-hm.png')
-![]('../analysis/eda/h5-plots/Gene1-Meg3-vs-Gene2-Gpc3-hm.png')
+![]{'../analysis/eda/h5-plots/Gene1-Afp-vs-Gene2-Meg3-hm.png'}
+![]{'../analysis/eda/h5-plots/Gene1-Meg3-vs-Gene2-Gpc3-hm.png'}
 
 ### Simulated Data
 
@@ -165,8 +165,8 @@ print(data_1.loc[:, 'motif_identifier':].head())
 The probabilities for a row may be transformed to a 51x51 matrix and visualize using heatmap, such as the following.
 
 There is a high probability of a given cell
-![](../analysis/eda/first-set-heatmaps/sample/motif-06-#00-index-4080.png)
-![](../analysis/eda/first-set-heatmaps/sample/motif-06-#01-index-3584.png)
+![]{../analysis/eda/first-set-heatmaps/sample/motif-06-#00-index-4080.png}
+![]{../analysis/eda/first-set-heatmaps/sample/motif-06-#01-index-3584.png}
 
 The following is a histogram of the probabilites (across all columns).
 
