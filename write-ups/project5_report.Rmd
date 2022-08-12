@@ -36,10 +36,13 @@ import numpy as np
 from scipy.sparse import csr_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
+from PIL import Image
 ```
 
 
 ### Experimental Data
+
+The data was transformed into a h5 file from https://oncoscape.v3.sttrcancer.org/atlas.gs.washington.edu.mouse.rna/downloads gene_count.txt.  
 
 ```{python}
 
@@ -60,15 +63,26 @@ indices = assay_data['indices']
 indptr = assay_data['indptr']
 
 csr_matrix = csr_matrix((data, indices, indptr))
+sparse_size = csr_matrix.shape
 ```
 
+The rows of the sparse matrix are cells, and the columns are genes. The dataset is (11376, 26183), so there are 11376 cells and 26183 genes. The dataset from the h5 file has been transformed into a sparse matrix, but a sample of it is not shown here because it is mostly zeroes. Instead, the histogram below shows the distribution of values in the sparse matrix. The 2d plot was created from the entire sparse matrix and reinforces the idea that some genes are more commonly expressed than others. This is shown by the vertical striations seen in the graph for genes that are expressed in many cells. Other genes are seen as whitespace because they are hardly expressed at all.
 
 
 ```{python}
-fig, ax = plt.subplots(figsize=(10, 7))
-sns.histplot(csr_matrix.toarray().reshape(-1), bins=50)
-ax.set_yscale('log')
-plt.xlabel('probabilty')
+#fig, ax = plt.subplots(figsize=(10, 7))
+#sns.histplot(csr_matrix.toarray().reshape(-1), bins=50)
+#ax.set_yscale('log')
+#plt.xlabel('probabilty')
+#plt.show()
+
+gene_count = Image.open('../analysis/eda/h5-plots/gene_count.png')
+gene_count.show()
+```
+
+```{python}
+sparse_2d = Image.open('../analysis/eda/h5-plots/2d-plot.png')
+sparse_2d.show()
 ```
 
 
