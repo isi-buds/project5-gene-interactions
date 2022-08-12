@@ -11,7 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ## Introduction and Problem Statement (1 paragraph)
-A brief summary of your our project and your main results (essentially like an abstract for a technical paper). Be sure to define precisely what problem your project addressed and to motivate the problem, i.e., state the reasons to be interested in this problem.
+Genes are foundational to cell biology. Some gene may cause others to not be express, repress, some may cause them to be expressed more, activate, some may repress or activate themselves, or have no interaction with other genes. Considering many genes in a cell together, a (one-direction) network can model the interactions between the genes, where an edge may indicate activation or indicate repression. Thus, knowing the network motif between two gens, or how two interact, can inform development of large gene networks and and understanding cell development, as these pairs are the 'building blocks' of the network. The method determining the gene pair motif , however, is not immediately obvious. The network link so much physical that it can be observed directly. What can be observed is the number of gene A and gene B across many cells. These provide counts which may be transformed to estimate a bivariate probability mass function (pmf). The bivariate pmf for A and B is, in part, the result of the underlying motif. Predicting the motif based on the pmf may, therefore, be possible. The To this end, we used supervised machine learning to predict the motif given the pmf. This required that we know the underlining motif, so the Read Lab estimated the pmfs for the motifs using simulation. 
+
+Out models have performed...
+
 
 ## Background and related work (1 or 2 paragraphs)
 Describe relevant scientific background and point to work that tried to solve similar problems in the past. Provide a few references to textbooks and/or research articles that describe relevant background.   
