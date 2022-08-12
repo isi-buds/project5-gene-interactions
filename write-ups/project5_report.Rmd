@@ -1,8 +1,10 @@
 ---
 title: "Project 5 Gene interaction"
 author: "Melissa Kang and Seth Peacock"
-output: html_document
 date: "2022-08-11"
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
