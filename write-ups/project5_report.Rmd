@@ -29,6 +29,11 @@ In another relevant article, Cao, J., Spielmann, M., Qiu, X. et al. have used sc
 Describe what data set(s) you used in the project – include references (e.g., URLs) for where you obtained the data if you can.  This section should have considerable detail – make sure you include a good description of your data set(s), including size, dimensionality, types of variables, etc. 
 Use figures (histograms, scatter plots, etc) and tables, but do not overwhelm the reader with too many plots and show only plots that provide interesting insights. In your writing, try to give the reader some intuition and sense of what your data is like.
 
+### Experimental Data
+
+
+### Simulated Data
+
 ## Methods
 Provide a description of the technical/methodological approach that chose for your project. State assumptions clearly. 
 
