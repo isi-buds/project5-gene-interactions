@@ -34,6 +34,8 @@ import h5py
 import pandas as pd
 import numpy as np
 from scipy.sparse import csr_matrix
+import matplotlib as plt
+import seaborn as sns
 ```
 
 
@@ -58,6 +60,15 @@ indices = assay_data['indices']
 indptr = assay_data['indptr']
 
 csr_matrix = csr_matrix((data, indices, indptr))
+```
+
+
+
+```{python}
+fig, ax = plt.subplots(figsize=(10, 7))
+sns.histplot(csr_matrix.toarray().reshape(-1), bins=50)
+ax.set_yscale('log')
+plt.xlabel('probabilty')
 ```
 
 
