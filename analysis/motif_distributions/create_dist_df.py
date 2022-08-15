@@ -5,10 +5,10 @@ from scipy.sparse import csr_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-# missing motif 32 and 8
-file_names_and_membership = {'1-1-11_probdist' : 57, '0100_probdist' : 50,
-                      '0-1-10_probdist' : 29, '0110_probdist' : 53,
-                      '00-10_probdist' : 44}
+file_names_and_membership = {'1-1-11_probdist' : 57, '0010_probdist' : 50,
+                             '00-10_probdist' : 32, '0-1-10_probdist' : 29,
+                             '0110_probdist' : 53, '-11-10_probdist' : 8,
+                             '0100_probdist' : 44}
 
 
 def create_dist_df(filenames) -> None:
@@ -25,23 +25,24 @@ def create_dist_df(filenames) -> None:
 
                 df = hdf[key]
 
-                col = df['col']
+                #col = df['col']
                 probdist = df['probdist']
-                row = df['row']
+                #row = df['row']
 
                 if probdist.shape != (0,):
                     prob_arr = list(probdist)
                     new_row = pd.concat([pd.Series(motif), pd.Series(prob_arr)],
                                 ignore_index = True)
 
-                    dist_df = dist_df.append(new_row, ignore_index=True)
+                    #dist_df = pd.concat([dist_df, new_row], axis = 1)
+                    dist_df = dist_df.append(new_row, ignore_index = True)
 
     dist_df = dist_df.fillna(0)
-    dist_df.to_csv('data/replicate-dists-df.csv', index = False)
+    dist_df.to_csv('data/secondset-df.csv', index = False)
         
 create_dist_df(file_names_and_membership)
 
-dist_df = pd.read_csv('data/replicate-dists-df.csv')
+dist_df = pd.read_csv('data/secondset-df.csv')
 print(dist_df)
 
 '''
