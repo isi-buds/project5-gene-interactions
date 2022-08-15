@@ -14,8 +14,7 @@ file_names_and_membership = {'1-1-11_probdist' : 57, '0010_probdist' : 50,
 def create_dist_df(filenames) -> None:
 
     dist_df = pd.DataFrame()
-
-    i =0
+    
     for file, motif in filenames.items():
 
         hdf = h5py.File('data/'+file+'.h5', mode = 'r')
@@ -26,23 +25,24 @@ def create_dist_df(filenames) -> None:
 
                 df = hdf[key]
 
-                col = df['col']
-                probdist = np.array(df['probdist'])
-                row = df['row']
-                column_names = ['p(%s,%s)' % (i, j) for i, j in zip(row, col)]
+                #col = df['col']
+                probdist = df['probdist']
+                #row = df['row']
 
                 if probdist.shape != (0,):
-                    dist_df.loc[i, 'motif'] = int(motif)
-                    dist_df.loc[i, column_names] = probdist
-                    i += 1
-                    
+                    prob_arr = list(probdist)
+                    new_row = pd.concat([pd.Series(motif), pd.Series(prob_arr)],
+                                ignore_index = True)
+
+                    #dist_df = pd.concat([dist_df, new_row], axis = 1)
+                    dist_df = dist_df.append(new_row, ignore_index = True)
 
     dist_df = dist_df.fillna(0)
-    dist_df.to_csv('data/secondset-prob-df.csv', index = False)
+    dist_df.to_csv('data/secondset-df.csv', index = False)
         
 create_dist_df(file_names_and_membership)
 
-dist_df = pd.read_csv('data/secondset-prob-df.csv')
+dist_df = pd.read_csv('data/secondset-df.csv')
 print(dist_df)
 
 '''
@@ -75,6 +75,3 @@ hm.invert_yaxis()
 plt.show()
 
 '''
-
-        
-        
