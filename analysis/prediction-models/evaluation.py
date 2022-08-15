@@ -14,9 +14,9 @@ def kfold_log_loss(model, X=None, y=None, n_splits=5):
     X = np.array(X)
     y = np.array(y).reshape(-1)
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True)
-    skf.get_n_splits(X)
+
     log_l = []
-    for train_index, test_index in skf.split(X):
+    for train_index, test_index in skf.split(X, y):
         model.fit(X[train_index], y[train_index])
         log_l.append(
             log_loss(y[test_index], model.predict_proba(X[test_index]))
@@ -37,9 +37,9 @@ def kfold_accuracy(model, X=None, y=None, n_splits=5):
     X = np.array(X)
     y = np.array(y).reshape(-1)
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True)
-    skf.get_n_splits(X)
+
     acc = []
-    for train_index, test_index in skf.split(X):
+    for train_index, test_index in skf.split(X, y):
         model.fit(X[train_index], y[train_index])
         acc.append(
             accuracy_score(y[test_index], model.predict(X[test_index]))
