@@ -19,11 +19,11 @@ def fit_multi_log_model(X: pd.DataFrame, y: pd.DataFrame, solver: str, max_iter:
     
     model.fit(X_train, y_train.values.ravel())
 
-    preds = model.predict(X_test)
+    #preds = model.predict(X_test)
 
     #print('\nPredictions: ', preds)
 
-    model_probs = model.predict_proba(X_test)
+    #model_probs = model.predict_proba(X_test)
 
     if(eval_type == 'Accuracy'):
         train_accuracy = accuracy_score(y_train, model.predict(X_train))
