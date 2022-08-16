@@ -77,7 +77,7 @@ for index in data_1.groupby('motif').sample(n=10, random_state=1).index:
     )
     hm.invert_yaxis()
     motif = data_1.at[index, 'motif']
-    file_name = 'motif-{motif:02}-#{i_2nd:02}-index-{index}'.format(motif=motif,
+    file_name = 'motif-{motif:02}-i-{i_2nd:02}-row-{index}'.format(motif=motif,
                                                                  i_2nd=i_2nd[motif],
                                                                  index=index)
     plt.xlabel('gene 1')
@@ -156,11 +156,11 @@ for i in range(data_1.shape[0]):
 
 # %%
 
-for start_row in range(0,46, 5):
-    for start_col in range(0,46, 5):
-        temp = data_array[:, start_row:(start_row + 6), start_col:(start_col + 6)].reshape(-1)
-        plt.hist(temp, bins=50)
-        plt.show()
+# for start_row in range(0,46, 5):
+#     for start_col in range(0,46, 5):
+#         temp = data_array[:, start_row:(start_row + 6), start_col:(start_col + 6)].reshape(-1)
+#         plt.hist(temp, bins=50)
+#         plt.show()
 
 # %%
 fig, ax = plt.subplots(figsize=(10, 7))
