@@ -165,7 +165,7 @@ data_1 = pd.merge(motif_labels, data_1, how='right', left_index=True, right_inde
 ```
 
 ```{python}
-print(data_1.loc[:, 'id':'p(0,4)'].head().to_markdown())
+print(data_1.loc[:, 'id':'p(0,4)'].head())
 ```
 
 The vector of probabilities for a row may be transformed to a 51x51 matrix and visualized using a heat map. Here are some examples:
@@ -209,6 +209,12 @@ KNN is an algorithm that relies on the how close points are to each other for pr
 
 An assumption for all of these methods is that the data use to train and test them are representative. This assumption is not meet when considering the empirical data since the simulated data does not have sampling loss like the empirical does. Before doing prediction on empirical data these methods would need to be train and tested on data which adjusts for this, as well as other factors that may make the simulated data non-representative of the empirical.
 
+As these methods, we also transformed the data into the following: the expected value of gene A (x_mean) and of gene B (y_mean), the standard deviation of A (x_sd) and of B (y_sd), the pearson correlation coefficient of A and B, the coexpression index of A and B (coexpress_index), the mutual information of A and B (mutual_info), the fano factor of A (x_fano) and of B (y_fano). Here is some of the transformed data:
+
+```{python}
+data_2m = pd.read_csv('../data/secondset_measures.csv')
+print(data_2m.head())
+```
 
 ## Results
 Describe inferential and/or predictive results of your analysis. Try to avoid showing large tables and use graphics if possible instead. 
