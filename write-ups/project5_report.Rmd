@@ -40,6 +40,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from PIL import Image
 import os
+import sys
 ```
 
 
@@ -116,7 +117,7 @@ top_26_df = pd.DataFrame(top_26_matrix)
 ```{python}
 print(top_26_df.head())
 ```
-
+![](../data/top_26_df.csv)
 
 The top_26_df is a Dataframe of the 26 most expressed genes in the sparse matrix. There are 26 rows for the 26 genes and there are 11376 columns for the original amount of cells. This Dataframe was used to create gene-gene interaction heatmap plots for each distinct interaction between the 26 genes. The axis of the plots are the gene counts and the coloring scale represents the number of cells with the combination of gene counts. Below are two of the plots made.
 
@@ -201,7 +202,7 @@ Provide a description of the technical/methodological approach that chose for yo
 
 We used several different machine learning methods for making predictions: multinomial logistic regression (ML), random forest (RF), and k nearest neighbors (KNN). 
 
-ML ...
+ML is used to predict a categorical variable with 2 or more discrete outcomes. The ML breaks down the variable being predicted into many comparisons until it has a series of comparisons between two outcomes at a time. Assumptions of ML are that the data is linear, has no outliers, has independent observations, and predictors have little multicollinearity.  The models were fit on the synthetic data and not the experimental, so there aren't any outliers that can't be explained. However, the predictors do have multicollinearity because the columns/features are probabilities. In order to counteract this, either the l1 or l2 penalty was imposed on all ML models. 
 
 RF uses an ensemble of decision trees. A decision tree splits the data using binary questions that maximize information gain for that split in the data. Once a tree is fit, prediction for a observation follow from which branches it follow in the tree. Using a single tree tends to result in over fitting and poor prediction on out of sample data. RF is one of the methods used for dealing the short-comings of decision trees. For RF, a individual tree is fitted to a sample, which has the same size as the training data and is sampled with replacement, from the training data. For each split in the tree, only a random selection of a specified proportion of the features are considered. Many trees trained on randoms samples using random selected features for each split are brought together to make a 'random forest'. When predicting with a RF, the predicted category is whatever category was predicted most frequently by the trees in the forest.
 
@@ -225,7 +226,7 @@ Our first set of results were better than random chance but not by much. We then
 
 ![](../analysis/prediction-models/plots/images/results-accuracy.png)
 ![](../analysis/prediction-models/plots/images/results-logloss.png)
-We use f(x) to denote transformed features, X the untransformed, 2nd the second set of simulated data. 
+We use f(x) to denote transformed features, X the transformed, 2nd the second set of simulated data. 
 
 As can be seen in the above graphs, decreasing the number of outcomes, transforming the features, and having more replicates per outcome resulted in the best outcomes for each methods. (Not all X's and y's were ran with KNN due to time constrains.) Here are the top five methods (by accuracy).
 
@@ -236,11 +237,21 @@ print(results.head(5))
 
 When considering accuracy ML is performed the best, but when considering log loss RF performed the best. In practice, ML may be the better when interested in returning the predicted motif for a gene pair. If we want to consider, however, the probabilities of a gene pair being each motif, RF may want to be considered, as the log loss is a measure of how far off the probability was for the correct outcome.
 
+ML model fit on second transformed data set confused motif 1-1-11 (mutual inhibition, self-activation) 20 times with 0100 (unidirectional activation) and confused motif 0110 (mutual activation) 23 times with 0100. In total, other motifs were confused with 0100 82 times. This could be because there are two possible ways to get unidirectional activation (0100 and 0010) with the model, but the model is only wrong about 124 times on average. 
+
 
 ## Discussion and Conclusion 
 Discuss what insights you gained from your project, in bullet form as follows:
 - Provide summary of your findings
 - What are limitations of your analyses? How can they be remedied in the future work?
+
+- ML model fit on second transformed data set (7 motifs/outcomes and about 500 replicates per motif) had the highest accuracy of 89%
+- RF model fit on second transformed data set had lowest log loss of 0.2988
+- All three models (ML, RF, KNN) fit on the second transformed data set were in the top five models when scoring accuracy and log loss respectively 
+- Motifs in data sets with a reduced amount of outcomes tended to confuse motifs with unidirectional activation an unproportional amount of the time
+
+
+- One limitation of our analyses is that our models could be used on the experimental data, but the underlying motifs would still be unknown. Without any other research being done on how the gene pairs in the experimental data set interact with each other, we have no way of evaluating the model on the experimental data. Being able to have a model that can predict motifs from gene counts in experimental data sets is the ultimate goal of this project.
 
 ## Works Cited
 
