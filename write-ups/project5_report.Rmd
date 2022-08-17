@@ -231,14 +231,21 @@ print(results.head(5))
 
 When considering accuracy ML is performed the best, but when considering log loss RF performed the best. In practice, ML may be the better when interested in returning the predicted motif for a gene pair. If we want to consider, however, the probabilities of a gene pair being each motif, RF may want to be considered, as the log loss is a measure of how far off the probability was for the correct outcome.
 
+ML model fit on second transformed data set confused motif 1-1-11 (mutual inhibition, self-activation) 20 times with 0100 (unidirectional activation) and confused motif 0110 (mutual activation) 23 times with 0100. In total, other motifs were confused with 0100 82 times. This could be because there are two possible ways to get unidirectional activation (0100 and 0010) with the model, but the model is only wrong about 124 times on average. 
+
 
 ## Discussion and Conclusion 
 Discuss what insights you gained from your project, in bullet form as follows:
 - Provide summary of your findings
 - What are limitations of your analyses? How can they be remedied in the future work?
 
+- ML model fit on second transformed data set (7 motifs/outcomes and about 500 replicates per motif) had the highest accuracy of 89%
+- RF model fit on second transformed data set had lowest log loss of 0.2988
+- All three models (ML, RF, KNN) fit on the second transformed data set were in the top five models when scoring accuracy and log loss respectively 
+- Motifs in data sets with a reduced amount of outcomes tended to confuse motifs with unidirectional activation an unproportional amount of the time
 
-One limitation of our analyses is that our models could be used on the experimental data, but the underlying motifs would still be unknown. Without any other research being done on how the gene pairs in the experimental data set interact with each other, we have no way of evaluating the model on the experimental data.
+
+- One limitation of our analyses is that our models could be used on the experimental data, but the underlying motifs would still be unknown. Without any other research being done on how the gene pairs in the experimental data set interact with each other, we have no way of evaluating the model on the experimental data. Being able to have a model that can predict motifs from gene counts in experimental data sets is the ultimate goal of this project.
 
 ## Works Cited
 
