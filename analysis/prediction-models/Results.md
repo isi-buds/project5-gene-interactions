@@ -11,3 +11,4 @@
 |Multinomial logistic     | secondset                | reduced   | 1.3719   | 0.4534  |
 |Multinomial logistic     | secondset prob           | reduced   | 1.1397   | 0.5100  |
 |Multinomial logistic     | secondset prob measures  | reduced   | 0.5118   | 0.8912  |
+
