@@ -31,22 +31,22 @@ df['Accuracy'] = df['Accuracy'].astype(float)
 
 df = df[['Method', 'X, y', 'Log Loss', 'Accuracy']]
 # print(df)
+df.sort_values('Accuracy', ascending=False).to_csv('data/results.csv', index=False)
+#
+df = pd.read_csv('data/results.csv')
 
-w = {'palette': 'nipy_spectral',
+cat_arg = {'palette': 'colorblind',
      'height': 5,
      'aspect': 2,
-     'kind': 'bar'}
+     'kind': 'bar',
+     'y': 'X, y',
+     'hue': 'Method',
+     'data': df}
 
-g1 = sns.catplot(x="Log Loss", y="Method",
-                hue="X, y", data=df,
-                **w)
+g1 = sns.catplot(x="Log Loss", **cat_arg)
 
 plt.savefig('analysis/prediction-models/plots/images/results-logloss.png')
 
-g2 = sns.catplot(x="Accuracy", y="Method",
-                hue="X, y", data=df,
-                **w)
+g2 = sns.catplot(x="Accuracy", **cat_arg)
 
 plt.savefig('analysis/prediction-models/plots/images/results-accuracy.png')
-
-df.sort_values('Accuracy', ascending=False).to_csv('data/results.csv')
