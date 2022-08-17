@@ -39,12 +39,12 @@ network_motifs = pd.read_table(os.path.join(*data_path, 'NetworkMotifs.txt'),
                              dtype=int,
                              engine='python')
 
-network_motifs = pd.DataFrame(network_motifs.apply(lambda x: '{} {} {} {}'.format(*x), axis=1),
-    columns=['network motif'])
+ids = pd.DataFrame(network_motifs.apply(lambda x: '{:2d}{:2d}{:2d}{:2d}'.format(*x), axis=1),
+    columns=['id'])
 
-network_motifs.index += 1
+ids.index += 1
 
-motif_labels = pd.merge(motif_labels.loc[:, 'motif'], network_motifs, how='left', left_on='motif', right_index=True)
+motif_labels = pd.merge(motif_labels.loc[:, 'motif'], ids, how='left', left_on='motif', right_index=True)
 data_1 = pd.merge(motif_labels, data_1, how='right', left_index=True, right_index=True)
 
 # %% Delete all files in the first-set-heatmaps folder
@@ -80,8 +80,8 @@ for index in data_1.groupby('motif').sample(n=10, random_state=1).index:
     file_name = 'motif-{motif:02}-i-{i_2nd:02}-row-{index}'.format(motif=motif,
                                                                  i_2nd=i_2nd[motif],
                                                                  index=index)
-    plt.xlabel('gene 1')
-    plt.ylabel('gene 2')
+    plt.xlabel('gene A')
+    plt.ylabel('gene B')
     plt.title('network motif: %s \n#%s' % (data_1.at[index, 'network motif'], i_2nd[motif]))
     plt.savefig(os.path.join(fs_hm_path, 'sample', file_name))
     plt.clf()
@@ -112,8 +112,8 @@ for motif in data_1['motif'].unique():
             hm.invert_yaxis()
             file_name = '{motif:02}-{func}'.format(motif=motif,
                                                 func=func.__name__)
-            plt.xlabel('gene 1')
-            plt.ylabel('gene 2')
+            plt.xlabel('gene A')
+            plt.ylabel('gene B')
             title = '%s of motif %s' % (func.__name__, network_motifs.at[motif, 'network motif'])
             plt.title(title)
             plt.savefig(os.path.join(fs_hm_path, 'summaries', file_name))
