@@ -3,11 +3,44 @@ import pandas as pd
 import numpy as np
 import os
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score
+from sklearn.model_selection import GridSearchCV, train_test_split
 from evaluation import kfold_log_loss, kfold_accuracy
 
 data_path = ['data']
+
+
+def get_params(X, y, params):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.2)
+    GSRF = GridSearchCV(RandomForestClassifier(), params, scoring='neg_log_loss', n_jobs=-1)
+    GSRF.fit(X_train, y_train)
+    return GSRF.best_params_
+
+
+def rfc_eval(X, y, params):
+    rfc = RandomForestClassifier(**params, n_jobs=-1)
+    logloss = kfold_log_loss(rfc, X=X, y=y)
+    acc = kfold_accuracy(rfc, X=X, y=y) 
+    return logloss, acc
+    
+
+class outcome_table:
+    def __init__(self):
+        self.table = pd.DataFrame(columns=['', 'Log Loss', 'Accuracy'])
+    
+    def add_eval(self, comment, eval_return):
+        temp = pd.DataFrame([[comment, *eval_return]], columns=self.table.columns)
+        self.table = pd.concat([self.table, temp])
+
+    def eval(self, comment, X, y, params):
+        eval_return = rfc_eval(X, y, params)
+        self.add_eval(comment, eval_return)
+
+    def print(self):
+        print(self.table.to_markdown())
+    
+
+scores = outcome_table()
+
 # %%
 X = pd.read_table(os.path.join(*data_path, 'SyntheticData_FirstSet.txt'),
     delimiter='   ',
@@ -21,9 +54,6 @@ y = pd.read_table(os.path.join(*data_path, 'membership.txt'),
     dtype=int,
     engine='python')
 
-train_index = y.groupby('motif').sample(frac=.8).index
-test_index = ~y.index.isin(train_index)
-
 y = y['motif'].values.reshape(-1)
 
 # %%
@@ -35,20 +65,10 @@ parameters = dict(n_estimators = [100, 200, 500],
                   max_depth = [4, 10, 50],
                   max_features = [.5, .7, .8])
 
-GSRF = GridSearchCV(RandomForestClassifier(), parameters, scoring='neg_log_loss', n_jobs=-1)
-GSRF.fit(X.loc[train_index], y[train_index])
-print(GSRF.best_params_)  # {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 500}
+print(get_params(X, y, parameters))  # {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 500}
 '''
-rfc_params_1 = {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 500}
-rfc_1 = RandomForestClassifier(**rfc_params_1, n_jobs=-1)
-
-logloss_1 = kfold_log_loss(rfc_1, X=X, y=y) # 3.3081473849185734
-print('Random Forest with Untransformed X, Unreduced y\nLogLoss: %s' % logloss_1)
-
-rfc_1.fit(X.loc[train_index], y[train_index])
-
-acc_1 = kfold_accuracy(rfc_1, X=X, y=y) 
-print('Accuracy: %s' % acc_1) # 0.1366
+rfc_params_0 = {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 500}
+scores.eval('Untransformed X, Unreduced y', X, y, rfc_params_0)
 
 # %% 
 
@@ -56,29 +76,17 @@ print('Accuracy: %s' % acc_1) # 0.1366
 
 motifs_of_interest = [57, 50, 32, 29, 53, 8, 44]
 subset = [ index for index, y_i in enumerate(y) if y_i in motifs_of_interest]
-red_train = [ index in train_index for index in subset ]
-red_test = [ test_index[index] for index in subset ]
 
 '''
 parameters = dict(n_estimators = [100, 200, 500],
                   max_depth = [4, 10, 50],
                   max_features = [.5, .7, .8])
 
-GSRF = GridSearchCV(RandomForestClassifier(), parameters, scoring='neg_log_loss', n_jobs=-1)
-GSRF.fit(X.loc[subset].loc[red_train], y[subset][red_train])
-print(GSRF.best_params_)  # {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 200}
+print(get_params(X.loc[subset], y[subset], parameters))  # {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 200}
 '''
 
-rfc_params_2 = {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 200}
-rfc_2 = RandomForestClassifier(**rfc_params_2, n_jobs=-1)
-
-logloss_2 = kfold_log_loss(rfc_2, X=X.loc[subset], y=y[subset])
-print('\nReduced y\nLogLoss: %s' % logloss_2) # 1.1978847937607144
-
-rfc_2.fit(X.loc[subset].loc[red_train], y[subset][red_train])
-
-acc_2 = kfold_accuracy(rfc_2, X=X.loc[subset], y=y[subset])
-print('Accuracy: %s' % acc_2) # 0.518631381983427
+rfc_params_1 = {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 200}
+scores.eval('Untransformed X, reduced y', X.loc[subset], y[subset], rfc_params_1)
 
 # %%
 
@@ -89,23 +97,13 @@ X_m = pd.read_csv(os.path.join(*data_path, 'firstset_measures.csv'))
 '''
 parameters = dict(n_estimators = [100, 500, 1000],
                   max_depth = [2,4,10],
-                  max_features = [.5, .7, .8])
+                  max_features = [.25, .5, .75])
 
-GSRF = GridSearchCV(RandomForestClassifier(), parameters, scoring='neg_log_loss', n_jobs=-1)
-GSRF.fit(X_m.loc[train_index], y[train_index])
-print(GSRF.best_params_)  # {'max_depth': 10, 'max_features': 0.75, 'n_estimators': 1000}
+print(get_params(X_m, y, parameters))  # {'max_depth': 10, 'max_features': 0.75, 'n_estimators': 1000}
 '''
 
-rfc_params_3 = {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 1000}
-rfc_3 = RandomForestClassifier(**rfc_params_3, n_jobs=-1)
-
-logloss_3 = kfold_log_loss(rfc_3, X=X_m, y=y)  
-print('\nTransformed X\nLogLoss: %s' % logloss_3) # 2.572978552599186
-
-rfc_3.fit(X_m.loc[train_index], y[train_index])
-
-acc_3 = kfold_accuracy(rfc_3, X=X_m, y=y)
-print('Accuracy: %s' % acc_3) # 0.24980000000000002
+rfc_params_2 = {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 1000}
+scores.eval('Transformed X, unreduced y', X_m, y, rfc_params_2)
 
 # %%
 
@@ -114,22 +112,64 @@ print('Accuracy: %s' % acc_3) # 0.24980000000000002
 '''
 parameters = dict(n_estimators = [100, 500, 1000],
                   max_depth = [2,4,10],
-                  max_features = [.5, .7, .8])
+                  max_features = [.25, .5, .75])
 
-GSRF = GridSearchCV(RandomForestClassifier(), parameters, scoring='neg_log_loss', n_jobs=-1)
-GSRF.fit(X.loc[subset].loc[red_train], y[subset][red_train])
-print(GSRF.best_params_)  # {'max_depth': 10, 'max_features': 0.75, 'n_estimators': 1000}
+print(get_params(X_m.loc[subset], y[subset], parameters))  # {'max_depth': 10, 'max_features': 0.75, 'n_estimators': 1000}
+'''
+
+rfc_params_3 = {'max_depth': 10, 'max_features': 0.25, 'n_estimators': 500}
+scores.eval('Transformed X, reduced y', X_m.loc[subset], y[subset], rfc_params_3)
+
+# %%
+
+### Second set
+
+# Untransformed
+
+data_2 = pd.read_csv('data/secondset-df.csv')
+X_2 = data_2.iloc[:, 1:]
+y_2 = data_2['motif']
+
+'''
+parameters = dict(n_estimators = [100, 500],
+                  max_depth = [2,4,10],
+                  max_features = [.1, .25, .5])
+
+print(get_params(X_2, y_2, parameters))  # {'max_depth': 10, 'max_features': 0.25, 'n_estimators': 500}
 '''
 
 rfc_params_4 = {'max_depth': 10, 'max_features': 0.25, 'n_estimators': 500}
-rfc_4 = RandomForestClassifier(**rfc_params_4, n_jobs=-1)
-
-logloss_4 = kfold_log_loss(rfc_4, X=X_m.loc[subset], y=y[subset])
-print('\nTransformed X, reduced y\nLogLoss: %s' % logloss_4) # 0.8139001082647404
-
-rfc_4.fit(X_m.loc[subset].loc[red_train], y[subset][red_train])
-
-acc_4 = kfold_accuracy(rfc_4, X=X_m.loc[subset], y=y[subset])
-print('Accuracy: %s' % acc_4) # 0.673750334135258
+scores.eval('Second Set untransformed', X_2, y_2, rfc_params_4)
 
 # %%
+
+# Measures
+data_2_m = pd.read_csv('data/secondset_measures.csv')
+X_2m = data_2_m.iloc[:, 1:]
+y_2m = data_2_m['motif']
+
+
+'''
+parameters = dict(n_estimators = [100, 500, 1000],
+                  max_depth = [2,4,10],
+                  max_features = [.25, .5, .75])
+
+print(get_params(X_2m, y_2m, parameters))  # {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 500}
+'''
+
+rfc_params_5 = {'max_depth': 10, 'max_features': 0.5, 'n_estimators': 500}
+scores.eval('Second Set transformed', X_2m, y_2m, rfc_params_5)
+
+# %%
+scores.print()
+
+'''
+                             | Log Loss | Accuracy
+-----------------------------|---------:|--------:
+Untransformed X, unreduced y | 3.2901   | 0.1422  
+Untransformed X, reduced y   | 1.2368   | 0.5322  
+Transformed X, unreduced y   | 2.5697   | 0.2592  
+Transformed X, reduced y     | 0.8240   | 0.6852  
+Second Set untransformed     | 0.4969   | 0.8009  
+Second Set transformed       | 0.2988   | 0.8544  
+'''
