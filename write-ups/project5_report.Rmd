@@ -40,6 +40,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from PIL import Image
 import os
+import sys
 ```
 
 
@@ -116,7 +117,7 @@ top_26_df = pd.DataFrame(top_26_matrix)
 ```{python}
 print(top_26_df.head())
 ```
-
+![](../data/top_26_df.csv)
 
 The top_26_df is a Dataframe of the 26 most expressed genes in the sparse matrix. There are 26 rows for the 26 genes and there are 11376 columns for the original amount of cells. This Dataframe was used to create gene-gene interaction heatmap plots for each distinct interaction between the 26 genes. The axis of the plots are the gene counts and the coloring scale represents the number of cells with the combination of gene counts. Below are two of the plots made.
 
@@ -201,7 +202,7 @@ Provide a description of the technical/methodological approach that chose for yo
 
 We used several different machine learning methods for making predictions: multinomial logistic regression (ML), random forest (RF), and k nearest neighbors (KNN). 
 
-ML ...
+ML is used to predict a categorical variable with 2 or more discrete outcomes. The ML breaks down the variable being predicted into many comparisons until it has a series of comparisons between two outcomes at a time. Assumptions of ML are that the data is linear, has no outliers, has independent observations, and predictors have little multicollinearity.  The models were fit on the synthetic data and not the experimental, so there aren't any outliers that can't be explained. However, the predictors do have multicollinearity because the columns/features are probabilities. In order to counteract this, either the l1 or l2 penalty was imposed on all ML models. 
 
 RF uses an ensemble of decision trees. A decision tree splits the data using binary questions that maximize information gain for that split in the data. Once a tree is fit, prediction for a observation follow from which branches it follow in the tree. Using a single tree tends to result in over fitting and poor prediction on out of sample data. RF is one of the methods used for dealing the short-comings of decision trees. For RF, a individual tree is fitted to a sample, which has the same size as the training data and is sampled with replacement, from the training data. For each split in the tree, only a random selection of a specified proportion of the features are considered. Many trees trained on randoms samples using random selected features for each split are brought together to make a 'random forest'. When predicting with a RF, the predicted category is whatever category was predicted most frequently by the trees in the forest.
 
