@@ -220,7 +220,7 @@ Our first set of results were better than random chance but not by much. We then
 
 ![](../analysis/prediction-models/plots/images/results-accuracy.png)
 ![](../analysis/prediction-models/plots/images/results-logloss.png)
-We use f(x) to denote transformed features, X the untransformed, 2nd the second set of simulated data. 
+We use f(x) to denote transformed features, X the transformed, 2nd the second set of simulated data. 
 
 As can be seen in the above graphs, decreasing the number of outcomes, transforming the features, and having more replicates per outcome resulted in the best outcomes for each methods. (Not all X's and y's were ran with KNN due to time constrains.) Here are the top five methods (by accuracy).
 
@@ -236,6 +236,9 @@ When considering accuracy ML is performed the best, but when considering log los
 Discuss what insights you gained from your project, in bullet form as follows:
 - Provide summary of your findings
 - What are limitations of your analyses? How can they be remedied in the future work?
+
+
+One limitation of our analyses is that our models could be used on the experimental data, but the underlying motifs would still be unknown. Without any other research being done on how the gene pairs in the experimental data set interact with each other, we have no way of evaluating the model on the experimental data.
 
 ## Works Cited
 
