@@ -82,7 +82,7 @@ for index in data_1.groupby('motif').sample(n=10, random_state=1).index:
                                                                  index=index)
     plt.xlabel('gene A')
     plt.ylabel('gene B')
-    plt.title('network motif: %s \n#%s' % (data_1.at[index, 'network motif'], i_2nd[motif]))
+    plt.title('network motif: %s \n#%s' % (data_1.at[index, 'id'], i_2nd[motif]))
     plt.savefig(os.path.join(fs_hm_path, 'sample', file_name))
     plt.clf()
     i_2nd[motif] += 1
@@ -114,7 +114,7 @@ for motif in data_1['motif'].unique():
                                                 func=func.__name__)
             plt.xlabel('gene A')
             plt.ylabel('gene B')
-            title = '%s of motif %s' % (func.__name__, network_motifs.at[motif, 'network motif'])
+            title = '%s of motif %s' % (func.__name__, ids.at[motif, 'id'])
             plt.title(title)
             plt.savefig(os.path.join(fs_hm_path, 'summaries', file_name))
             plt.clf()
