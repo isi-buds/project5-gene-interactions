@@ -3,8 +3,8 @@ title: "Project 5 Gene interaction"
 author: "Melissa Kang and Seth Peacock"
 date: "2022-08-11"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -12,13 +12,13 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
-## Introduction and Problem Statement (1 paragraph)
+## Introduction and Problem Statement
 Genes are fundamental to cell biology. Some gene may cause others to not be express, repress, some may cause them to be expressed more, activate, some may repress or activate themselves, or have no interaction with other genes. Key genes determine cell development. Considering many genes in a cell together, a (one-direction) network can model the interactions between the genes, where an edge may indicate activation or indicate repression. A large network of many genes is build up from network motifs between pairs of genes. Knowing these motifs, then, can inform modeling of large gene networks and and understanding cell development. The network links, however, not so clear that they can be observed directly. What can be observed is the number of gene A and gene B across many cells. These provide counts which may be transformed to estimate a bivariate probability mass function (pmf) for the two genes. The bivariate pmf is, in part, the result of the underlying motif. Predicting the motif based on the pmf may, therefore, be possible. The To this end, we used supervised machine learning to predict the motif given the pmf. This required that we know the underlining motif, so the Read Lab estimated the pmfs for the motifs using simulation. 
 
 Prediction-modeling performance is pending.
 
 
-## Background and related work (1 or 2 paragraphs)
+## Background and related work
 Describe relevant scientific background and point to work that tried to solve similar problems in the past. Provide a few references to textbooks and/or research articles that describe relevant background. 
 
 
@@ -134,7 +134,7 @@ data_path = ['..', 'data']
 x = [ i for i in range(51) for _ in range(51)]
 y = [ i for _ in range(51) for i in range(51)]
 
-columns = ['p(X=%s,Y=%s)' % (i, j) for i, j in zip(x,y)]
+columns = ['p(%d,%d)' % (i, j) for i, j in zip(x,y)]
 
 data_1 = pd.read_table(os.path.join(*data_path, 'SyntheticData_FirstSet.txt'),
                        delimiter='   ',
@@ -156,17 +156,17 @@ network_motifs = pd.read_table(os.path.join(*data_path, 'NetworkMotifs.txt'),
                              engine='python')
 
 network_motifs = pd.DataFrame(network_motifs.apply(lambda x: '{} {} {} {}'.format(*x), axis=1),
-    columns=['motif_identifier'])
+    columns=['id'])
 
 network_motifs.index += 1
 
 motif_labels = pd.merge(motif_labels.loc[:, 'motif'], network_motifs, how='left', left_on='motif', right_index=True)
 data_1 = pd.merge(motif_labels, data_1, how='right', left_index=True, right_index=True)
 
-print(data_1.loc[:, 'motif_identifier':].head())
+print(data_1.loc[:, 'id':].head())
 ```
 
-The probabilities for a row may be transformed to a 51x51 matrix and visualized using a heatmap.
+The vector of probabilities for a row may be transformed to a 51x51 matrix and visualized using a heat map.
 
 
 ```{python eval=FALSE, include=FALSE}
@@ -192,6 +192,15 @@ This one is mutual repression, self activation.
 ## Methods
 Provide a description of the technical/methodological approach that chose for your project. State assumptions clearly. 
 
+We used several different machine learning methods for making predictions: multinomial logistic regression (ML), random forest (RF), and k nearest neighbors (KNN). 
+
+ML ...
+
+RF uses an ensemble of decision trees. A decision tree splits the data using binary questions that maximize information gain for that split in the data. Once a tree is fit, prediction for a observation follow from which branches it follow in the tree. Using a single tree tends to result in over fitting and poor prediction on out of sample data. RF is one of the methods used for dealing the short-comings of decision trees. For RF, a individual tree is fitted to a sample, which has the same size as the training data and is sampled with replacement, from the training data. For each split in the tree, only a random selection of a specified proportion of the features are considered. Many trees trained on randoms samples using random selected features for each split are brought together to make a 'random forest'. When predicting with a RF, the predicted category is whatever category was predicted most frequently by the trees in the forest.
+
+KNN is an algorithm that relies on the how close points are to each other for prediction. It works like this: To predict the class for a new point, find a specified number (k) of the closest points in euclidean space to that point; use the most frequent class among those neighbors to predict the class of the new point. As may be guess from the description, a major draw back of KNN is that it does not perform well when the outcomes are not clustered, such as when categories live each others' neighborhood. (This might actually be a problem for all prediction though) In our implementation of KNN, we scaled the features using `standardscaler` from the SKLearn package to avoid giving certain features more weight in the prediction.
+
+An assumption for all of these methods is that the data use to train and test them are representative. This assumption is not meet when considering the empirical data since the simulated data does not have sampling loss like the empirical does. Before doing prediction on empirical data these methods would need to be train and tested on data which adjusts for this, as well as other factors that may make the simulated data non-representative of the empirical.
 
 
 ## Results
