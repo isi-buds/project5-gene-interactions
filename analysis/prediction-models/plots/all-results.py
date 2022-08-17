@@ -49,4 +49,4 @@ g2 = sns.catplot(x="Accuracy", y="Method",
 
 plt.savefig('analysis/prediction-models/plots/images/results-accuracy.png')
 
-# df.sort_values('Accuracy', ascending=False).to_csv('temp.csv')
+df.sort_values('Accuracy', ascending=False).to_csv('data/results.csv')
