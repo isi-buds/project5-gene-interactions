@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Introduction and Problem Statement
 
-Genes are fundamental to cell biology. Some gene may cause others to not be expressed or repressed, some may cause them to be expressed more, some activate other genes, some may repress or activate themselves, and others have no interaction with other genes. Key genes determine cell development. Considering many genes in a cell together, a (one-direction) network can model the interactions between the genes, where an edge may indicate activation, repression, or a null interaction. A large network of many genes is built up from network motifs between pairs of genes. Knowing these motifs, then, can inform modeling of large gene networks and the understanding of cell development. However, it is not so clear that the network links can be observed directly. What can be observed is the number of gene A and gene B across many cells. These provide counts which may be transformed to estimate a bivariate probability mass function (pmf) for the two genes. The bivariate pmf is, in part, the result of the underlying motif. Predicting the motif based on the pmf may, therefore, be possible. To this end, we used supervised machine learning to predict the motif given the pmf. This required that we know the underlining motif, so the Read Lab estimated the pmfs from the motifs using simulation. 
+Genes are fundamental to cell biology. Some gene may cause others to not be expressed or repressed, some may cause them to be expressed more, some activate other genes, some may repress or activate themselves, and others have no interaction with other genes. Key genes determine cell development. Considering many genes in a cell together, a network can model the interactions between the genes, where an edge may indicate activation, repression, or a null interaction. A large network of many genes is built up from network motifs between pairs of genes. Knowing these motifs, then, can inform modeling of large gene networks and the understanding of cell development. However, it is not so clear that the network links can be observed directly. What can be observed is the number of gene A and gene B across many cells. These provide counts which may be transformed to estimate a bivariate probability mass function (pmf) for the two genes. The bivariate pmf is, in part, the result of the underlying motif. Predicting the motif based on the pmf may, therefore, be possible. To this end, we used supervised machine learning to predict the motif given the pmf. This required that we know the underlining motif, so the Read Lab estimated the pmfs using simulation under known conditions, such as motif and rate parameters. 
 
 
 ## Background and related work
@@ -204,7 +204,6 @@ The mean varies quite a bit because rate parameters control all four interaction
 ![](../analysis/eda/second-set-heatmaps/summaries/44.0-std.png)
 \newpage
 ## Methods
-Provide a description of the technical/methodological approach that chose for your project. State assumptions clearly. 
 
 We used several different machine learning methods for making predictions: multinomial logistic regression (ML), random forest (RF), and k nearest neighbors (KNN). 
 
@@ -216,11 +215,11 @@ KNN is an algorithm that relies on the how close points are to each other for pr
 
 An assumption for all of these methods is that the data used to train and test them are representative. This assumption is not met when considering the empirical data since the simulated data does not have sampling loss like the empirical does. Before doing prediction on empirical data, these methods would need to be trained and tested on data which adjusts for this, as well as other factors that may make the simulated data non-representative of the empirical.
 
-For these methods, we also transformed the data into the following: the expected value of gene A (x_mean) and of gene B (y_mean), the standard deviation of A (x_sd) and of B (y_sd), the pearson correlation coefficient of A and B, the coexpression index of A and B (coexpress_index), the entropy of A and B (entropy), the mutual information of A and B (mutual_info), and the fano factor of A (x_fano) and of B (y_fano). Here is some of the transformed data:
+We also transformed the data into the following: the expected value of gene A (x_mean) and of gene B (y_mean), the standard deviation of A (x_sd) and of B (y_sd), the pearson correlation coefficient of A and B, the coexpression index of A and B (coexpress_index), the entropy of A and B (entropy), the mutual information of A and B (mutual_info), and the fano factor of A (x_fano) and of B (y_fano). Here is rows of the transformed data:
 
 ```{python}
 data_2m = pd.read_csv('../data/secondset_measures.csv')
-print(data_2m.head())
+print(data_2m.head(5))
 ```
 
 ## Results
