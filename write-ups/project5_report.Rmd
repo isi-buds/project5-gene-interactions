@@ -13,23 +13,22 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 ## Introduction and Problem Statement
-Genes are fundamental to cell biology. Some gene may cause others to not be express, repress, some may cause them to be expressed more, activate, some may repress or activate themselves, or have no interaction with other genes. Key genes determine cell development. Considering many genes in a cell together, a (one-direction) network can model the interactions between the genes, where an edge may indicate activation or indicate repression. A large network of many genes is build up from network motifs between pairs of genes. Knowing these motifs, then, can inform modeling of large gene networks and and understanding cell development. The network links, however, not so clear that they can be observed directly. What can be observed is the number of gene A and gene B across many cells. These provide counts which may be transformed to estimate a bivariate probability mass function (pmf) for the two genes. The bivariate pmf is, in part, the result of the underlying motif. Predicting the motif based on the pmf may, therefore, be possible. The To this end, we used supervised machine learning to predict the motif given the pmf. This required that we know the underlining motif, so the Read Lab estimated the pmfs for the motifs using simulation. 
 
-Prediction-modeling performance is pending.
+Genes are fundamental to cell biology. Some gene may cause others to not be express, repress, some may cause them to be expressed more, activate, some may repress or activate themselves, or have no interaction with other genes. Key genes determine cell development. Considering many genes in a cell together, a (one-direction) network can model the interactions between the genes, where an edge may indicate activation or indicate repression. A large network of many genes is build up from network motifs between pairs of genes. Knowing these motifs, then, can inform modeling of large gene networks and and understanding cell development. The network links, however, not so clear that they can be observed directly. What can be observed is the number of gene A and gene B across many cells. These provide counts which may be transformed to estimate a bivariate probability mass function (pmf) for the two genes. The bivariate pmf is, in part, the result of the underlying motif. Predicting the motif based on the pmf may, therefore, be possible. The To this end, we used supervised machine learning to predict the motif given the pmf. This required that we know the underlining motif, so the Read Lab estimated the pmfs for the motifs using simulation. 
 
 
 ## Background and related work
-Describe relevant scientific background and point to work that tried to solve similar problems in the past. Provide a few references to textbooks and/or research articles that describe relevant background. 
 
+Gene regulatory network (GRN) inference has been and remains a difficult problem. Contributing to the challenge is that single cell RNA-seq may not provide gene counts with sufficient accuracy for inferring GRNs. They give a sample of the amount of genes, but depending on the technology, sc RNA-seq can only detect about 10% of all RNA molecules actually present (Zheng, Y., Zhong, Y., Hu, J. et al.). Thus, sc RNA-seq captures only a limited amount of data.
 
 Stochastic models of gene regulatory networks have been tremendously influential towards understanding cellular heterogeneity and analyzing data from single-cell RNA sequencing (scRNA-seq). In order to further understand single-cell gene pair interactions, stochastic models have been used to produce gene-pair co-expression landscapes from a bivariate distribution (Gallivan et al. (2020)). Gallivan et al. have developed a family of stochastic gene-gene interaction models because existing single-cell data analysis techniques have mostly disregarded that pair-wise gene interactions can be deduced from the shapes of these landscapes (2020). Shannon Entropy, Peason Correlation Coefficient, Mutual Information, and a Coexpression Index were found to be relatively inaccurate predictors of landscape shape of a gene-gene interaction on their own, so the student researchers added mean and standard deviation to the list of features to train the models (Gallivan et al. (2020)). 
 
 In another relevant article, Cao, J., Spielmann, M., Qiu, X. et al. have used scRNA-seq on two million cells from mouse embryo in attempt to obtain a more comprehensive view of the mouse oranogenesis cell atlas (MOCA) and developmental processes (Cao, J., Spielmann, M., Qiu, X. et al. (2019)). The student researchers have used the data collected for this experiment to visualize the gene-pair bivariate pmfs used for the stochastic models and to test whether the models trained on the simulated data can distinguish the motif of a landscape. 
 
+Pratapa, A., Jalihal, A.P., Law, J.N. et al. have used partial information decomposition (PIDC) to predict gene regulatory networks from experimental data sets. However, this project is only focused on gene pairs and not a network of pairs. Also, we used our models to predict motifs on simulated data because we have no way of evaluating the correctness of a model fit on the experimental data. Pratapa, A., Jalihal, A.P., Law, J.N. et al. has developed an evaluation framework called BEELINE to assess their algorithms and models, but this is outside of the scope of the project.
+
 
 ## Data and exploratory data analysis
-Describe what data set(s) you used in the project – include references (e.g., URLs) for where you obtained the data if you can.  This section should have considerable detail – make sure you include a good description of your data set(s), including size, dimensionality, types of variables, etc. 
-Use figures (histograms, scatter plots, etc) and tables, but do not overwhelm the reader with too many plots and show only plots that provide interesting insights. In your writing, try to give the reader some intuition and sense of what your data is like.
 
 ```{python}
 import h5py
@@ -83,43 +82,23 @@ The rows of the sparse matrix are cells, and the columns are genes. The dataset 
 ![](../analysis/eda/h5-plots/gene_count.png)
 ![](../analysis/eda/h5-plots/2d-plot.png)
 
-```{python results = 'hide'}
-row_labels = d1['row_labels']
 
-rows = np.array(row_labels)
-
-df = pd.DataFrame.sparse.from_spmatrix(sparse)
-num_cols = df.shape[1]
-
-# series containing the number of cells that express the 
-# corresponding gene
-num_genes = pd.Series()
-
-for gene, data in df.iteritems():
-    cell_count = pd.Series((data != 0).sum())
-    num_genes = num_genes.append(cell_count)
-
-num_genes.index = [i for i in range(0, num_cols)]
-
-# get top 26 most expressed gene
-most_expressed = num_genes.nlargest(n = 26)
-
-top_26_matrix = []
-
-for gene, count in most_expressed.iteritems():
-    top_26_matrix.append(df.loc[:, gene])
-
-# rows: genes
-# cols: cells
-top_26_df = pd.DataFrame(top_26_matrix)
+```{python}
+top_26 = pd.read_csv('../data/top_26_df.csv')
+print(top_26.head(5))
 ```
 
 ```{python}
-print(top_26_df.head())
-```
-![](../data/top_26_df.csv)
+shortened_genes = {23560:'Yam1', 7942:'Afp', 19548:'Meg3', 24692:'Malat1',
+                   26165:'mt-Rnr2'}
 
-The top_26_df is a Dataframe of the 26 most expressed genes in the sparse matrix. There are 26 rows for the 26 genes and there are 11376 columns for the original amount of cells. This Dataframe was used to create gene-gene interaction heatmap plots for each distinct interaction between the 26 genes. The axis of the plots are the gene counts and the coloring scale represents the number of cells with the combination of gene counts. Below are two of the plots made.
+for key, val in shortened_genes.items():
+  print('Row index: ', key, '; gene name: ', val)
+```
+
+
+
+The top_26_df is a DataFrame of the 26 most expressed genes in the sparse matrix. There are 26 rows for the 26 genes and there are 11376 columns for the original amount of cells. The first column contains the row index of the selected genes from the original experimental DataFrame, and shown above are the corresponding gene names for the first five genes. This DataFrame was used to create gene-gene interaction heatmap plots for each distinct interaction between the 26 genes. The axis of the plots are the gene counts and the coloring scale represents the number of cells with the combination of gene counts. Below are two of the plots made.
 
 From the afp vs meg3 plot, we can infer that cells that express a large amount of Afp also tend to express a large amount of Meg3. Therefore, we are expecting a motif identifier that expresses a fairly equal relationship between the two genes. The meg3 vs gpc3 plot shows that cells that express a large amount of Gpc3 tend to express a lower amount of Meg3, so we expect a motif identifer that favors one of the genes over the other. 
 
@@ -127,6 +106,7 @@ From the afp vs meg3 plot, we can infer that cells that express a large amount o
 ![](../analysis/eda/h5-plots/Gene1-Meg3-vs-Gene2-Gpc3-hm.png)
 
 ### Simulated Data
+
 These data were generated by the Read Lab using the stochastic model which Gallivan et al. introduced (2019). We used multiple simulated data sets. The first we received (hereafter ) had pmf estimates for all 81 gene pair motifs, approximately 60 replicates, each using different rate parameters, per motif. The pmf's domain was two counts, starting at zero and truncated at fifty. This pmf was vectorized (length 2601). Each of the columns, then, has the estimated probability that a given cell would have that count of genes A and that count of gene B . For example, p(41,11) is the probability that a given cell would have 41 of gene A and 11 of gene B. We added to each row the motif identifier, which is four digits. The first digit identifies what gene A does to itself, the second what gene A does to gene B, the third what B does to A, and the fourth what B does to itself. Each digit may be 1 for activation, 0 for not interaction, or -1 for repression. Here is the first five rows of the data frame.
 
 ```{python Simulated Data Sample, echo=FALSE}
@@ -252,6 +232,10 @@ Discuss what insights you gained from your project, in bullet form as follows:
 Cao, J., Spielmann, M., Qiu, X. et al. The single-cell transcriptional landscape of mammalian organogenesis. Nature 566, 496–502 (2019). https://doi.org/10.1038/s41586-019-0969-x
 
 Gallivan CP, Ren H and Read EL (2020) Analysis of Single-Cell Gene Pair Coexpression Landscapes by Stochastic Kinetic Modeling Reveals Gene-Pair Interactions in Development. Front. Genet. 10:1387. doi: 10.3389/fgene.2019.01387
+
+Pratapa, A., Jalihal, A.P., Law, J.N. et al. Benchmarking algorithms for gene regulatory network inference from single-cell transcriptomic data. Nat Methods 17, 147–154 (2020). https://doi.org/10.1038/s41592-019-0690-6
+
+Zheng, Y., Zhong, Y., Hu, J. et al. SCC: an accurate imputation method for scRNA-seq dropouts based on a mixture model. BMC Bioinformatics 22, 5 (2021). https://doi.org/10.1186/s12859-020-03878-8
 
 
 
