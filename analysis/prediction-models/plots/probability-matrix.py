@@ -38,22 +38,25 @@ rfc = RandomForestClassifier(**rfc_params, n_jobs=-1)
 # make plots
 fig, ax = plt.subplots(figsize=(10, 10))
 p = []
-for m in [mlr, rfc]:
+for m, name in [(mlr, 'Multinomial Logistic Regression'), (rfc, 'Random Forest')]:
     m.fit(X_train, y_train)
     p_data = pd.DataFrame(m.predict_proba(X_test), columns=m.classes_)
     p_data['id'] = y_test.values
     mean_p = p_data.groupby('id').mean()
+    sd_p = p_data.groupby('id').std()
     hm = sns.heatmap(
         mean_p,
         square=True,
         cbar_kws={'label': 'probability'},
+        annot=True,
+        annot_kws={"size": 18},
         cmap=my_cmap
     )
-    plt.title(f'{m.__class__()}')
+    plt.title(f'{name}')
     plt.xlabel('predicted')
     plt.xticks(rotation=45)
     plt.ylabel('true')
     plt.yticks(rotation=45)
-    plt.savefig(f'analysis/prediction-models/plots/images/{m.__class__()}-heatmap.png')
+    plt.savefig(f'analysis/prediction-models/plots/images/{name.lower().replace(" ", "-")}-heatmap.png')
     plt.clf()
-    p.append([m.__class__(), mean_p])
+    p.append([name, mean_p, sd_p])

@@ -13,5 +13,6 @@ Multinomial logistic     | firstset measures        | reduced   | 1.2537   | 0.1
 Multinomial logistic     | secondset                | reduced   | 1.1397   | 0.5100  
 Multinomial logistic     | secondset measures       | reduced   | 0.5118   | 0.8912  
 K Nearest Neighbors      | firstset                 | unreduced | 4.8777   | 0.0674  
-K Nearest Neighbors      | firstset measures        | unreduced | 4.9230   | 0.0584  
-K Nearest Neighbors      | secondset measures       | reduced   | 0.5013   | 0.7774
+K Nearest Neighbors      | firstset measures        | unreduced | 4.9230   | 0.0584
+K Nearest Neighbors      | secondset                | reduced   | 1.4042   | 0.5493
+K Nearest Neighbors      | secondset measures       | reduced   | 0.5687   | 0.7866
