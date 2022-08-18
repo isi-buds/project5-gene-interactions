@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from scipy.sparse import csr_matrix
 
+# working directory: project5-gene-interactions
 filename = 'data/hepatocyte_data.h5'
 
 hdf = h5py.File(filename, mode = 'r')
@@ -22,7 +23,11 @@ indptr = assay_data['indptr']
 
 csr_matrix = csr_matrix((data, indices, indptr))
 
+print(csr_matrix.shape)
+
+
 # ---------------------------------------------
+
 
 row_labels = d1['row_labels']
 
@@ -55,6 +60,7 @@ for gene, count in most_expressed.iteritems():
 # rows: genes
 # cols: cells
 top_26_df = pd.DataFrame(top_26_matrix)
+top_26_df.to_csv('data/top_26_df.csv')
 #print(top_26_df.shape)
-#print(top_26_df.head())
-# make pairwise heatmaps in other file
+
+#print(top_26_df)

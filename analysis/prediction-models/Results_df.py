@@ -12,3 +12,12 @@ results = [['Random Forest', 'firstset', 'unreduced', 3.3081, 0.1366],
            ['Multinomial logistic', 'secondset', 'reduced', 1.3719, 0.4534],
            ['Multinomial logistic', 'secondset prob', 'reduced', 1.1397, 0.5100],
            ['Multinomial logistic', 'secondset prob measures', 'reduced', 0.5118, 0.8912]]
+
+cols = ['Method', 'X', 'y', 'Log loss', 'Accuracy']
+
+results_df = pd.DataFrame(results, columns = cols)
+
+ml_results = results_df[results_df['Method'] == 'Multinomial logistic']
+
+rf_results = results_df[results_df['Method'] == 'Random Forest']
+

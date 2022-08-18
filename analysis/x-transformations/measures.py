@@ -140,3 +140,43 @@ if secondset_input == 'Y':
 
     data_2_m.to_csv(os.path.join(*data_path, 'secondset_measures.csv'), index=False)
     print('secondset_measures.csv created')
+
+
+eight_motif_set_input = input("Create measures for eight motif set?(Y/n) ")
+
+if eight_motif_set_input == 'Y':
+    file_names_and_membership = {'1-1-11_probdist' : 57, '0010_probdist' : 50,
+                             '00-10_probdist' : 32, '0-1-10_probdist' : 29,
+                             '0110_probdist' : 53, '-11-10_probdist' : 8,
+                             '0100_probdist' : 44, '1000_probdist' : 68}
+
+    data_3_m = pd.DataFrame(columns=['motif', 'x_mean', 'y_mean', 'x_sd', 'y_sd', 'corr', 'coexpress_index', 'entropy', 'mutual_info', 'x_fano', 'y_fano'])
+
+    i = 0
+    for file, motif in file_names_and_membership.items():
+
+        hdf = h5py.File('data/'+file+'.h5', mode = 'r')
+        
+        for key in hdf.keys():
+            
+            if key != 'parameterset':
+
+                df = hdf[key]
+
+                col = df['col']
+                probdist = np.array(df['probdist'])
+                row = df['row']
+
+                if probdist.shape != (0,):
+                    A = csr_matrix((probdist, (row, col))).toarray()
+                    data_3_m.loc[i, 'motif'] = int(motif)
+                    data_3_m.loc[i, ['x_mean', 'y_mean']] = get_mean(A)
+                    data_3_m.loc[i, ['x_sd', 'y_sd']] = get_sd(A)
+                    data_3_m.loc[i, 'corr'] = get_corr(A)
+                    data_3_m.loc[i, 'coexpress_index'] = coexpression_index(A)
+                    data_3_m.loc[i, ['entropy', 'mutual_info']] = entropy_mut_info(A)
+                    data_3_m.loc[i, ['x_fano', 'y_fano']] = fano(A)
+                    i += 1
+
+    data_3_m.to_csv(os.path.join(*data_path, 'eight_motif_set_measures.csv'), index=False)
+    print('eight_motifset_measures.csv created')

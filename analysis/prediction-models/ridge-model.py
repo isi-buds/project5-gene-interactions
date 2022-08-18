@@ -1,10 +1,9 @@
 # L2 penalty
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import Ridge, RidgeCV, LogisticRegression
+from sklearn.linear_model import Ridge, RidgeCV
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, log_loss, mean_squared_error
-from evaluation import kfold_log_loss
+from sklearn.metrics import mean_squared_error
 
 data = pd.read_table('data/SyntheticData_FirstSet.txt', delimiter = '   ', 
                       header = None, engine = 'python')

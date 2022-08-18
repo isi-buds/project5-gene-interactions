@@ -21,9 +21,9 @@ y = motifs
 
 X2 = np.full((5000, 1), 1)
 
-fit_multi_log_model(X = X, y = y, solver = 'sag', max_iter = 200, 
-                    multi_class = 'multinomial',
-                    penalty = 'l2', test_size = 0.33, X2 = X2)
+#fit_multi_log_model(X = X, y = y, solver = 'sag', max_iter = 200, 
+#                    multi_class = 'multinomial',
+#                    penalty = 'l2', test_size = 0.33, X2 = X2)
 
 print('\n ---------------------------- \n')
 
@@ -40,6 +40,6 @@ confusion_matrix = confusion_matrix(y_test, first_model.predict(X_test))
 
 cm_df = pd.DataFrame(confusion_matrix)
 #cm_df = cm_df.rename(columns = motifs.values.tolist,
-#                     index = motifs.values.tolist())
+#xa                     index = motifs.values.tolist())
 
 print(cm_df)
