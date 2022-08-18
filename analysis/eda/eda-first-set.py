@@ -14,7 +14,7 @@ data_path = ['data']
 
 my_cmap = copy.copy(matplotlib.cm.get_cmap('viridis'))
 my_cmap.set_bad(my_cmap.colors[0])
-sns.set(font_scale=1.5)
+sns.set(font_scale=1.5, style='white')
 plt.rc('font', size=12)
 
 # # Synth Data First Set
@@ -77,12 +77,12 @@ for index in data_1.groupby('motif').sample(n=10, random_state=1).index:
     )
     hm.invert_yaxis()
     motif = data_1.at[index, 'motif']
-    file_name = 'motif-{motif:02}-i-{i_2nd:02}-row-{index}'.format(motif=motif,
+    file_name = 'motif-{motif:02}-i-{i_2nd:02}-row-{index}.png'.format(motif=motif,
                                                                  i_2nd=i_2nd[motif],
                                                                  index=index)
     plt.xlabel('gene A')
     plt.ylabel('gene B')
-    plt.title('network motif: %s \n#%s' % (data_1.at[index, 'id'], i_2nd[motif]))
+    plt.title('id: %s \n#%s' % (data_1.at[index, 'id'], i_2nd[motif]))
     plt.savefig(os.path.join(fs_hm_path, 'sample', file_name))
     plt.clf()
     i_2nd[motif] += 1
@@ -110,7 +110,7 @@ for motif in data_1['motif'].unique():
                 cmap=my_cmap
             )
             hm.invert_yaxis()
-            file_name = '{motif:02}-{func}'.format(motif=motif,
+            file_name = '{motif:02}-{func}.png'.format(motif=motif,
                                                 func=func.__name__)
             plt.xlabel('gene A')
             plt.ylabel('gene B')
@@ -164,10 +164,11 @@ for i in range(data_1.shape[0]):
 
 # %%
 fig, ax = plt.subplots(figsize=(10, 7))
-sns.histplot(data_array.reshape(-1), bins=50)
+sns.histplot(data_1.drop(['motif', 'id'], axis=1).to_numpy().reshape(-1), bins=50)
 ax.set_yscale('log')
 plt.xlabel('probabilty')
-plt.show()
+plt.title('First Set')
+plt.savefig(os.path.join(fs_hm_path, 'histogram.png'))
 
 # %%
 # # %% For 3d plot
