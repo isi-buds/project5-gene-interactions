@@ -17,6 +17,7 @@ my_cmap.set_bad(my_cmap.colors[0])
 sns.set(font_scale=1.5)
 plt.rc('font', size=12)
 
+'''
 # delete old plots
 for f in os.listdir(h5_plots_path):
     path_1 = os.path.join(h5_plots_path, f)
@@ -25,26 +26,31 @@ for f in os.listdir(h5_plots_path):
             os.remove(os.path.join(path_1, f_f))
     else:
         os.remove(path_1)
+'''
 
 sparse = eda_h5.csr_matrix
 
-fig, ax = plt.subplots()
+
+fig, ax = plt.subplots(figsize=(10, 7))
 
 plt.spy(sparse.toarray())
+
 plt.xlabel('Genes')
 plt.ylabel('Cells')
 
 #plt.show()
 plt.title('2d Plot of Genes vs. Cells')
 plt.savefig('analysis/eda/h5-plots/2d-plot.png')
+plt.show()
 
 plt.clf()
 
+
 #print(sparse)
 
+#-------------------------------------------------------
 
 
-#--------------------------------------------------
 top_26 = eda_h5.top_26_df
 genes = eda_h5.rows
 shortened_genes = {23560:'Yam1', 7942:'Afp', 19548:'Meg3', 24692:'Malat1',
@@ -84,13 +90,6 @@ def get_hm_matrix(df_2_genes: pd.DataFrame, size: int) -> np.array([[int]]):
             unique_pairs[pair] = 1
         else:
             unique_pairs[pair] += 1
-
-    '''
-    temp_x, temp_y = map(max, zip(*unique_pairs))
-
-    res = [[unique_pairs.get((j, i), 0) for i in range(temp_y + 1)] 
-                                  for j in range(temp_x + 1)]
-    '''
     
     x, y = zip(*unique_pairs.keys())
     res = np.zeros((size, size), np.int32)
@@ -136,6 +135,18 @@ for index1, gene1 in top_26.iterrows():
             plt.clf()
 
             seen.append({gene1.iloc[0], gene2.iloc[0]})
+
+
+
+#--------------------------------------------------
+
+fig, ax = plt.subplots(figsize=(10, 7))
+sns.histplot(sparse.toarray().reshape(-1), bins=50)
+ax.set_yscale('log')
+plt.xlabel('probabilty')
+plt.show()
+plt.savefig('analysis/eda/h5-plots/gene_count.png')
+
 
 
 

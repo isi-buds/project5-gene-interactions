@@ -5,45 +5,50 @@ from scipy.sparse import csr_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-file_names_and_membership = {'1-1-11_probdist' : 57, '0010_probdist' : 50,
-                             '00-10_probdist' : 32, '0-1-10_probdist' : 29,
-                             '0110_probdist' : 53, '-11-10_probdist' : 8,
-                             '0100_probdist' : 44}
+task = input('Create dataset or print dataset? (create/print): ')
+
+if task == 'create':
+    file_names_and_membership = {'1-1-11_probdist' : 57, '0010_probdist' : 50,
+                                '00-10_probdist' : 32, '0-1-10_probdist' : 29,
+                                '0110_probdist' : 53, '-11-10_probdist' : 8,
+                                '0100_probdist' : 44}
 
 
-def create_secondset_df(filenames) -> None:
+    def create_secondset_df(filenames) -> None:
 
-    secondset = pd.DataFrame()
+        secondset = pd.DataFrame()
 
-    i =0
-    for file, motif in filenames.items():
+        i =0
+        for file, motif in filenames.items():
 
-        hdf = h5py.File('data/'+file+'.h5', mode = 'r')
-        
-        for key in hdf.keys():
+            hdf = h5py.File('data/'+file+'.h5', mode = 'r')
             
-            if key != 'parameterset':
+            for key in hdf.keys():
+                
+                if key != 'parameterset':
 
-                df = hdf[key]
+                    df = hdf[key]
 
-                col = df['col']
-                probdist = np.array(df['probdist'])
-                row = df['row']
-                column_names = ['p(%s,%s)' % (i, j) for i, j in zip(row, col)]
+                    col = df['col']
+                    probdist = np.array(df['probdist'])
+                    row = df['row']
+                    column_names = ['p(%s,%s)' % (i, j) for i, j in zip(row, col)]
 
-                if probdist.shape != (0,):
-                    secondset.loc[i, 'motif'] = int(motif)
-                    secondset.loc[i, column_names] = probdist
-                    i += 1
-                    
+                    if probdist.shape != (0,):
+                        secondset.loc[i, 'motif'] = int(motif)
+                        secondset.loc[i, column_names] = probdist
+                        i += 1
+                        
 
-    secondset = secondset.fillna(0)
-    secondset.to_csv('data/secondset-prob-df.csv', index = False)
-        
-create_secondset_df(file_names_and_membership)
+        secondset = secondset.fillna(0)
+        secondset.to_csv('data/secondset-prob-df.csv', index = False)
 
-secondset = pd.read_csv('data/secondset-prob-df.csv')
-print(secondset)
+    create_secondset_df(file_names_and_membership)
+
+elif task == 'print':
+    
+    secondset = pd.read_csv('data/secondset-prob-df.csv')
+    print(secondset)
 
 '''
 filename = 'data/-11-10_probdist.h5'
