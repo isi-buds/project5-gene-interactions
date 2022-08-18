@@ -241,8 +241,13 @@ print(results.head(5))
 
 When considering accuracy, ML performed the best, but when considering log loss, RF performed the best. In practice, ML may be the better when interested in returning the predicted motif for a gene pair. If we want to consider, however, the probabilities of a gene pair being each motif, RF may want to be considered, as the log loss is a measure of how far off the probability was for the correct outcome.
 
-ML model fit on the second transformed data set, transformed features for the data set with seven motifs and about 500 replicates each, confused replicates from motif 1-1-11 (mutual inhibition, self-activation) 20 times with 0100 (unidirectional activation) and confused replicates from motif 0110 (mutual activation) 23 times with 0100. In total, other motifs were confused with 0100 82 times. This could be because there are two possible ways to get unidirectional activation (0100 and 0010) with the model, but the model is only wrong about 124 times on average for each testing group. Another reason could be that the replicates of 1-1-11 and 0110 that were confused with the unidirectional activation motifs had rate combinations that made the pmfs look like the pmfs from unidirectional activation.
 
+Shown below are the probability prediction heat-maps for the ML and RF models fit on the second features data set. As shown in the plots, RF has a lower log loss (0.2988) compared to ML (0.5118). Visually, this means that RF tends to choose only one other motif when it's wrong whereas ML tends to confuse each motif for multiple other motifs.
+
+ML model fit on the second transformed data set, transformed features for the data set with seven motifs and about 500 replicates each, confused replicates from motif 1-1-11 (mutual inhibition, self-activation) 20 times with 0100 (unidirectional activation) and confused replicates from motif 0110 (mutual activation) 23 times with 0100. In total, other motifs were confused with 0100 82 times. This could be because there are two possible ways to get unidirectional activation (0100 and 0010) with the model, but the model is only wrong about 124 times on average for each testing group. Another reason could be that the replicates of 1-1-11 and 0110 that were confused with the unidirectional activation motifs had rate combinations that made the pmfs look like the pmfs from unidirectional activation. 
+
+![](../analysis/prediction-models/plots/images/multinomial-logistic-regression-heatmap.png)
+![](../analysis/prediction-models/plots/images/random-forest-heatmap.png)
 
 ## Discussion and Conclusion 
 
