@@ -151,7 +151,7 @@ data_1 = pd.merge(motif_labels, data_1, how='right', left_index=True, right_inde
 print(data_1.loc[:, 'id':'p(0,4)'].head())
 ```
 
-The vector of probabilities for a row may be transformed to a 51x51 matrix and visualized using a heat map. The axis are the counts of gene A and gene B while the color scale is the probability of a cell having that combination of gene A and gene B. Here are some examples:
+The vector of probabilities for a row may be transformed to a 51x51 matrix and visualized using a heat-map. The axis are the counts of gene A and gene B while the color scale is the probability of a cell having that combination of gene A and gene B. Here are some examples:
 
 ![](../analysis/eda/first-set-heatmaps/sample/motif-03-i-05-row-4976.png)
 ![](../analysis/eda/first-set-heatmaps/sample/motif-37-i-05-row-1663.png)
@@ -186,7 +186,7 @@ secondset = pd.read_csv('../data/secondset-prob-df.csv')
 print(secondset.head(5))
 ```
 
-Below are some of the heatmaps for the second data set.
+Below are some of the heat-maps for the second data set.
 
 ![](../analysis/eda/second-set-heatmaps/sample/motif-57-i-06-row-469.png)
 Mutual inhibition, self activation tends to have more count combinations with high probabilities because there are rate parameters for all four interactions. The noise you see is from the sampling.
