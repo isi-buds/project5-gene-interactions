@@ -82,8 +82,8 @@ for index in data_2.groupby('motif').sample(n=10, random_state=1).index:
     file_name = 'motif-{motif:02}-i-{i_2nd:02}-row-{index}.png'.format(motif=motif,
                                                                  i_2nd=i_2nd[motif],
                                                                  index=index)
-    plt.xlabel('gene 1')
-    plt.ylabel('gene 2')
+    plt.xlabel('gene A')
+    plt.ylabel('gene B')
     plt.title('id: %s \n#%s' % (data_2.at[index, 'id'], i_2nd[motif]))
     plt.savefig(os.path.join(ss_hm_path, 'sample', file_name))
     plt.clf()
@@ -123,8 +123,8 @@ for motif in data_2['motif'].unique():
             hm.invert_yaxis()
             file_name = '{motif:02}-{func}.png'.format(motif=motif,
                                                 func=func.__name__)
-            plt.xlabel('gene 1')
-            plt.ylabel('gene 2')
+            plt.xlabel('gene A')
+            plt.ylabel('gene B')
             title = '%s of motif %s' % (func.__name__, ids.at[motif, 'id'])
             plt.title(title)
             plt.savefig(os.path.join(ss_hm_path, 'summaries', file_name))
